@@ -10,11 +10,14 @@ import { useSelector } from "react-redux";
 import { USER } from "../constants";
 import { selectUserDetails } from "../features/user/userSlice";
 import { Slide, ToastContainer, toast } from "react-toastify";
+import ChangePassword from "./ChangePassword";
 // import { Notification } from "./Notification";
 
 const BaseLayout = ({ children }) => {
     const [showSignInModal, setShowSignInModal] = useState(false);
     const [showSignUpModal, setShowSignUpModal] = useState(false);
+    const [showForgotPasswordModal, setShowForgotPasswordModal] =
+        useState(false);
 
     const toggleSignInModal = () => {
         setShowSignInModal(!showSignInModal);
@@ -37,6 +40,21 @@ const BaseLayout = ({ children }) => {
         }
         if (b === false) {
             setShowSignUpModal(b);
+            return;
+        }
+    };
+    const handleToggleForgotPassword = (b = null) => {
+        if (b === null) {
+            setShowForgotPasswordModal(!showForgotPasswordModal);
+            return;
+        }
+
+        if (b === true) {
+            setShowForgotPasswordModal(b);
+            return;
+        }
+        if (b === false) {
+            setShowForgotPasswordModal(b);
             return;
         }
     };
@@ -95,6 +113,11 @@ const BaseLayout = ({ children }) => {
                 toggleSignUpModal={toggleSignUpModal}
                 handleToggleSignIn={handleToggleSignIn}
                 handleToggleSignUp={handleToggleSignUp}
+                handleToggleForgotPassword={handleToggleForgotPassword}
+            />
+            <ChangePassword
+                showModal={showForgotPasswordModal}
+                handleToggleForgotPassword={handleToggleForgotPassword}
             />
             {children}
             <Footer />

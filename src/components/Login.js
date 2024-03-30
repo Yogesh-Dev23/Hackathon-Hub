@@ -1,4 +1,3 @@
-// SignInForm.jsx
 import React, { useEffect, useState } from "react";
 import {
     Input,
@@ -23,6 +22,7 @@ const Login = ({
     setShowSignInModal,
     handleToggleSignUp,
     handleToggleSignIn,
+    handleToggleForgotPassword,
 }) => {
     const [formData1, setFormData1] = useState({
         email: "",
@@ -31,6 +31,10 @@ const Login = ({
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData1((prevstate) => ({ ...prevstate, [name]: value }));
+    };
+    const handleForgotPasswordClick = () => {
+        handleToggleSignIn(false);
+        handleToggleForgotPassword(true);
     };
     const handleSignUpClick = () => {
         handleToggleSignIn(false);
@@ -71,35 +75,56 @@ const Login = ({
     };
 
     // const userData = useSelector(selectUserDetails);
-
+    const [validationErrors, setValidationErrors] = useState({});
     const handleSubmit = async (e) => {
-        try {
-            e.preventDefault();
-            const userData = await dispatch(userLogin(formData1)).unwrap();
-            if (userData) {
-                Cookies.set("userData", JSON.stringify(userData), {
-                    expires: 7,
-                });
-            }
-
-            // showNotification({type: "success", message: "Login successful!"})
-            setShowError(false);
-            setFormData1({
-                email: "",
-                password: "",
-            });
-            handleToggleSignIn(false);
-            navigate("/hackathons");
-            toast.success("Login Successful!");
-        } catch (error) {
-            setShowError(true);
-            // toast.error("Login Failed!");
+        const newErrors = {};
+        if (!formData1.email) {
+            newErrors.email = "Email is Required!";
         }
+        if (formData1.email && !validateEmail(formData1.email)) {
+            newErrors.email = "Email is Invalid!";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setValidationErrors(newErrors);
+        } else {
+            try {
+                e.preventDefault();
+                const userData = await dispatch(userLogin(formData1)).unwrap();
+                if (userData) {
+                    Cookies.set("userData", JSON.stringify(userData), {
+                        expires: 7,
+                    });
+                }
+
+                // showNotification({type: "success", message: "Login successful!"})
+                setShowError(false);
+                setFormData1({
+                    email: "",
+                    password: "",
+                });
+                setValidationErrors(newErrors);
+                handleToggleSignIn(false);
+                navigate("/hackathons");
+                toast.success("Login Successful!");
+            } catch (error) {
+                setShowError(true);
+                // toast.error("Login Failed!");
+            }
+        }
+        setValidationErrors(newErrors);
     };
 
     useEffect(() => {
         setShowError(false);
     }, [showModal]);
+
+    const validateEmail = (email) => {
+        // Regex pattern for email validation
+        const pattern =
+            /^[_a-z0-9-]+(\.[_a-z0-9-]+)*(\+[a-z0-9-]+)?@[a-z0-9-]+(\.[a-z0-9-]+)*$/i;
+        return pattern.test(email);
+    };
 
     const navigate = useNavigate();
     // useEffect(() => {
@@ -116,6 +141,7 @@ const Login = ({
         // toggleModal();
         handleToggleSignIn(false);
         handleTogglePassword("password");
+        setValidationErrors({});
         setFormData1({
             email: "",
             password: "",
@@ -162,6 +188,11 @@ const Login = ({
                                             placeholder="abc@gmail.com"
                                             required
                                         />
+                                        {validationErrors.email && (
+                                            <Typography className="text-red-500 text-xs w-fit">
+                                                {validationErrors.email}
+                                            </Typography>
+                                        )}
                                         <Input
                                             id="password"
                                             name="password"
@@ -220,6 +251,16 @@ const Login = ({
                                             flexDirection: "column",
                                         }}
                                     >
+                                        <Typography
+                                            // as="a"
+                                            // href="#signup"
+                                            variant="small"
+                                            color="blue-gray"
+                                            className="ml-1 font-bold cursor-pointer"
+                                            onClick={handleForgotPasswordClick}
+                                        >
+                                            Forgot Password?
+                                        </Typography>
                                         {showError && error && (
                                             <Typography className="text-red-500 text-xs w-fit">
                                                 {error?.message ||
