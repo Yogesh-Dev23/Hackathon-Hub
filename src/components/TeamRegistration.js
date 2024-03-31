@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { teamRegistration } from "../features/team/teamSlice";
 import {
+    reattemptLogin,
     selectUserId,
     successTeamRegistration,
 } from "../features/user/userSlice";
@@ -82,6 +83,7 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
                 await dispatch(
                     teamRegistration({ hackathonId, userId, team })
                 ).unwrap();
+                await dispatch(reattemptLogin({userId})).unwrap()
                 // toast.success(`Team: ${formData.name} registered successfully!`)
                 handler();
                 // navigate

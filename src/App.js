@@ -31,6 +31,7 @@ import { HACKATHONS, USER } from "./constants";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import { fetchEvaluators } from "./features/evaluator/evaluatorSlice";
 import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 function App() {
     const dispatch = useDispatch();
 
@@ -47,6 +48,7 @@ function App() {
         //
 
         if (userData?.role === "admin") {
+            console.log("fetching evaluators")
             dispatch(fetchEvaluators());
         }
         if (userData?.role === "participant") {
@@ -70,10 +72,10 @@ function App() {
     }, [userData]);
 
     useEffect(() => {
-        const userCookie = Cookies.get("userData");
-        console.log(userCookie)
-        if (userCookie) {
-            dispatch(reattemptLogin(JSON.parse(userCookie)));
+        const userId = Cookies.get("userId");
+        const token = Cookies.get("token");
+        if (userId && token) {
+            dispatch(reattemptLogin({userId}));
         }
     }, []);
 

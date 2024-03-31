@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
 
 const initialState = {
     // hackathons:{
@@ -14,6 +17,9 @@ export const fetchHackathons = createAsyncThunk(
     async (thunkAPI) => {
         try {
             const response = await axios.get("http://localhost:8080/Hackathon");
+            if (!response.data) {
+                return [];
+            }
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -24,14 +30,19 @@ export const hackathonCreation = createAsyncThunk(
     "hackathon/hackathonCreation",
     async (hackathonData, thunkAPI) => {
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 "http://localhost:8080/Admin/hackathon",
-                hackathonData
+                hackathonData,
+                { headers }
             );
             // console.log(response);
             // const response2 = await axios.get(
             //     "http://localhost:8080/Hackathon"
             // );
+
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -43,8 +54,12 @@ export const hackathonEnd = createAsyncThunk(
     "hackathon/hackathonEnd",
     async (hackathonId, thunkAPI) => {
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.put(
-                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`
+                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`,
+                { headers }
             );
             // console.log(response);
             // const response2 = await axios.get(

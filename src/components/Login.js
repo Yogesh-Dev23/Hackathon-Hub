@@ -90,12 +90,14 @@ const Login = ({
         } else {
             try {
                 e.preventDefault();
-                const userData = await dispatch(userLogin(formData1)).unwrap();
-                if (userData) {
-                    Cookies.set("userData", JSON.stringify(userData), {
-                        expires: 7,
-                    });
-                }
+                await dispatch(userLogin(formData1)).unwrap();
+                
+                // const userData = await dispatch(userLogin(formData1)).unwrap();
+                // if (userData) {
+                //     Cookies.set("userData", JSON.stringify(userData), {
+                //         expires: 7,
+                //     });
+                // }
 
                 // showNotification({type: "success", message: "Login successful!"})
                 setShowError(false);

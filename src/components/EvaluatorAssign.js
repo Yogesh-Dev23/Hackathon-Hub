@@ -35,11 +35,11 @@ const EvaluatorAssign = () => {
     // useSelector((state) => state.evaluator.evaluators?.data) || [];
 
     const [JUDGES, setJUDGES] = useState(
-        evaluators.filter((evaluator) => evaluator.role === "judge")
+        evaluators?.filter((evaluator) => evaluator.role === "judge")
     );
 
     const [PANELISTS, setPANELISTS] = useState(
-        evaluators.filter((evaluator) => evaluator.role === "panelist")
+        evaluators?.filter((evaluator) => evaluator.role === "panelist")
     );
 
     // console.log(JUDGES);

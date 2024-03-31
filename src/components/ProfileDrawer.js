@@ -41,7 +41,8 @@ const ProfileDrawer = ({ opens, onClose }) => {
     const dispatch = useDispatch();
     const logoutHandler = () => {
         dispatch(logout());
-        Cookies.remove("userData");
+        Cookies.remove("userId");
+        Cookies.remove("token");
         dispatch(clearEvaluators());
         dispatch(clearTeams());
         onClose();
