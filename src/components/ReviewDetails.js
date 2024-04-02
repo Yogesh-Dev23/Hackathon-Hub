@@ -16,13 +16,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { rateTeam } from "../features/team/teamSlice";
-import { selectUserDetails } from "../features/user/userSlice";
+import { fetchJudgeTeamsByHackathonId, rateTeam } from "../features/team/teamSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
 import { toast } from "react-toastify";
 
 const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
     const dispatch = useDispatch();
     const userData = useSelector(selectUserDetails);
+    const token = useSelector(selectUserToken);
     const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
     const [selectedHackathon, setSelectedHackathon] = useState(
@@ -39,7 +40,7 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
         setSelectedIdea(
             IDEAS?.find((idea) => idea?.teamId === selectedIdeaId) || IDEAS[0]
         );
-    }, [selectedIdeaId]);
+    }, [selectedIdeaId, IDEAS]);
 
     useEffect(() => {
         if (selectedIdea) {
@@ -52,7 +53,6 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
     }, [selectedIdea]);
 
     const [openRules, setOpenRules] = useState(false);
-
 
     const handleOpenRules = () => {
         setOpenRules(!openRules);
@@ -91,7 +91,13 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
         } else {
             try {
                 console.log(reviewData);
-                await dispatch(rateTeam(reviewData)).unwrap();
+                await dispatch(rateTeam({ ...reviewData, token })).unwrap();
+                await dispatch(
+                    fetchJudgeTeamsByHackathonId({
+                        hackathonId: userData?.assignedHackathon,
+                        token,
+                    })
+                ).unwrap();
                 toast.success("Review submitted succesfully");
             } catch (error) {
                 toast.error(`Error ${error?.message}`);
@@ -164,33 +170,6 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                         {selectedIdea?.ideaDomain || ""}
                                     </Typography>
                                 </div>
-                                {/* <div className="md:col-span-3 px-2 flex items-center justify-end">
-                                    <Rating
-                                        unratedColor="amber"
-                                        ratedColor="amber"
-                                        value={
-                                            reviewData?.rating
-                                            // reviewedIdeas.find(
-                                            //     (idea) =>
-                                            //         idea.teamId ===
-                                            //         selectedIdea?.teamId
-                                            // )?.rating
-                                        }
-                                        onChange={(value) =>
-                                            handleRating(value)
-                                        }
-                                        // readonly={
-                                        //     // reviewedIdeas.includes(selectedIdea?.teamId)
-
-                                        //     reviewedIdeas?.filter(
-                                        //         (obj) =>
-                                        //             obj.teamId ===
-                                        //             selectedIdea?.teamId
-                                        //     ).length > 0
-                                        // }
-                                    />
-                                   
-                                </div> */}
                             </div>
 
                             <div className="w-full mt-1 rounded-2xl p-2">
@@ -198,7 +177,7 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     {selectedIdea?.ideaBody || ""}
                                 </Typography>
                             </div>
-                            <div className="w-full mt-1 rounded-2xl p-2 gap-1">
+                            <div className="flex flex-row p-2 gap-4">
                                 <Link
                                     to={selectedIdea?.ideaRepo || "#"}
                                     target="_blank"

@@ -17,6 +17,8 @@ import {
     reattemptLogin,
     selectUserDetails,
     selectUserId,
+    selectUserToken,
+    updateToken,
 } from "./features/user/userSlice";
 import BaseLayout from "./components/BaseLayout";
 import TeamDetails from "./pages/TeamDetails";
@@ -38,10 +40,12 @@ function App() {
 
     //change to this for redux integration
     const hackathons = useSelector(selectHackathons);
+
+    const token = useSelector(selectUserToken);
     // HACKATHONS;
     // useSelector((state) => state.hackathon.hackathons.data);
     const userData = useSelector(selectUserDetails);
-    
+
     // const token = Cookies.get("token");
     useEffect(() => {
         dispatch(fetchHackathons());
@@ -50,36 +54,45 @@ function App() {
         //
 
         if (userData?.role === "admin") {
-            console.log("fetching evaluators")
-            dispatch(fetchEvaluators());
+            dispatch(fetchEvaluators({token}));
         }
-        // if (userData?.role === "participant") {
-        //     dispatch(fetchTeamDetails(userId));
-        // }
+        if (userData?.role === "participant") {
+            dispatch(fetchTeamDetails({ userId, token }));
+        }
         if (userData?.role === "judge") {
             dispatch(
                 fetchJudgeTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
+                    token,
                 })
             );
         }
         if (userData?.role === "panelist") {
-            console.log("fetching teams");
             dispatch(
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
                     panelistid: userId,
+                    token
                 })
             );
         }
-    }, [userData]);
+    }, [userData, token]);
 
     useEffect(() => {
-        const userId = Cookies.get("userId");
-        const token = Cookies.get("token");
-        if (userId && token) {
-            dispatch(reattemptLogin({userId}));
-        }
+        const relogin = async () => {
+            const userId = Cookies.get("userId");
+            const token = Cookies.get("token");
+            if (userId && token) {
+                try {
+                    await dispatch(reattemptLogin({ userId, token })).unwrap();
+                    dispatch(updateToken(token));
+                } catch (error) {
+                    Cookies.remove("userId");
+                    Cookies.remove("token");
+                }
+            }
+        };
+        relogin();
     }, []);
 
     const userId = useSelector(selectUserId);
@@ -136,10 +149,7 @@ function App() {
                             />
                         }
                     />
-                    <Route
-                            path="trial"
-                            element={<HackathonRequests />}
-                        />
+                    <Route path="trial" element={<HackathonRequests />} />
                 </Routes>
             </BrowserRouter>
         </div>

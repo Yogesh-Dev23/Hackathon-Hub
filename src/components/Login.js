@@ -10,7 +10,13 @@ import {
     Card,
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserDetails, userLogin } from "../features/user/userSlice";
+import {
+    selectErrorUser,
+    selectLoadingUser,
+    selectUserDetails,
+    updateToken,
+    userLogin,
+} from "../features/user/userSlice";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
@@ -40,22 +46,15 @@ const Login = ({
     const handleSignUpClick = () => {
         handleToggleSignIn(false);
         handleToggleSignUp(true);
-        // toggleModal(); // Close the SignInModal
-        // toggleModals(); // Open the SignUpModal
     };
     const handleGoogleSignIn = () => {
         // Call the function to initiate Google Sign-In process
         // For example, you can use the Google Sign-In API
     };
     const dispatch = useDispatch();
-    // const data = null;
-    // useSelector((state) => state.user.login.data);
-    // const status = data ? data.status : null;
-    // const error = useSelector((state) => state.user.login.error);
-    // const loading = useSelector((state) => state.user.login.loading);
     const [showError, setShowError] = useState(false);
-    const error = useSelector((state) => state.user.error);
-    const loading = useSelector((state) => state.user.loading);
+    const error = useSelector(selectErrorUser);
+    const loading = useSelector(selectLoadingUser);
     const [passwordInputType, setPasswordInputType] = useState("password");
 
     const handleTogglePassword = (type = "none") => {
@@ -92,6 +91,10 @@ const Login = ({
             try {
                 e.preventDefault();
                 await dispatch(userLogin(formData1)).unwrap();
+                const token = Cookies.get("token");
+                if (token) {
+                    dispatch(updateToken(token));
+                }
                 setShowError(false);
                 setFormData1({
                     email: "",
@@ -121,16 +124,7 @@ const Login = ({
     };
 
     const navigate = useNavigate();
-    // useEffect(() => {
-    //     if (status === 200) {
-    //         setShowSignInModal(false);
-    //         // navigate('/')
-    //         // toast.success("SignIn Success!", {
-    //         //     position: "top-center",
-    //         //     transition:Slide
-    //         // });
-    //     }
-    // }, [status]);
+
     const dialogHandler = () => {
         // toggleModal();
         handleToggleSignIn(false);

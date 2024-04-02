@@ -1,6 +1,7 @@
 import {
     Button,
     Card,
+    CardBody,
     CardHeader,
     Dialog,
     Input,
@@ -8,10 +9,11 @@ import {
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { teamRegistration } from "../features/team/teamSlice";
+import { selectErrorTeam, selectLoadingTeam, teamRegistration } from "../features/team/teamSlice";
 import {
     reattemptLogin,
     selectUserId,
+    selectUserToken,
     successTeamRegistration,
 } from "../features/user/userSlice";
 import { USER } from "../constants";
@@ -28,8 +30,8 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
     // const status = data ? data.status : null;
     // const error = useSelector((state) => state.team.registration.error);
 
-    const error = useSelector((state) => state.team.error);
-    const loading = useSelector((state) => state.team.loading);
+    const error = useSelector(selectErrorTeam);
+    const loading = useSelector(selectLoadingTeam);
 
     const [showError, setShowError] = useState(false);
 
@@ -50,7 +52,7 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
     const name = formData.name;
     const team = { emails, name };
     // console.log(team);
-    const [errors, setErrors] = useState({});
+    const [validationErrors, setValidationErrors] = useState({});
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -60,6 +62,7 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
     //         handler();
     //     }
     // }, [status]);
+    const token = useSelector(selectUserToken)
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -77,15 +80,16 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
             newErrors.email3 = "Email is invalid";
         }
         if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+            setValidationErrors(newErrors);
         } else {
             try {
                 await dispatch(
-                    teamRegistration({ hackathonId, userId, team })
+                    teamRegistration({ hackathonId, userId, team, token })
                 ).unwrap();
-                await dispatch(reattemptLogin({userId})).unwrap()
+                await dispatch(reattemptLogin({userId, token})).unwrap()
                 // toast.success(`Team: ${formData.name} registered successfully!`)
                 handler();
+                toast.success("Team successfully registered!")
                 // navigate
                 setShowError(false);
             } catch (error) {
@@ -94,7 +98,7 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
             }
             // dispatch(successTeamRegistration(hackathonId));
         }
-        setErrors(newErrors);
+        setValidationErrors(newErrors);
     };
     const validateEmail = (email) => {
         // Regex pattern for email validation
@@ -104,7 +108,7 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
     };
     const handler = () => {
         setOpen((cur) => !cur);
-        setErrors({});
+        setValidationErrors({});
         setFormData({
             name: "",
             email1: "",
@@ -121,19 +125,20 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
                 handler={handler}
                 className="bg-transparent shadow-none"
             >
-                <Card className="mx-auto w-full px-16 py-4">
+                 <Card className="mx-auto max-h-[95vh] md:max-h-[89vh] w-full px-1 py-2 md:px-16 md:py-4">
                     <CardHeader
                         variant="gradient"
                         color="gray"
-                        className="mb-4 grid w-full h-16 place-items-center place-self-center"
+                        className="mb-4 grid w-3/4 h-16 place-items-center place-self-center"
                     >
                         <Typography variant="h5" color="white">
                             Register Your Team
                         </Typography>
                     </CardHeader>
+                    <CardBody className="pb-2 md:max-h-[89vh] overflow-y-auto">
                     <form
                         onSubmit={submitHandler}
-                        className="flex flex-col gap-y-4 mx-auto my-4 w-96 borderrounded-xl p-2"
+                        className="flex flex-col gap-y-4 w-full mx-auto pt-2 md:mt-2 md:p-2"
                     >
                         <Input
                             type="text"
@@ -143,51 +148,51 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
                             value={formData.teamname}
                             onChange={handleChange}
                         />
-                        {errors.teamname && (
+                        {validationErrors.teamname && (
                             <Typography className="text-red-500 text-xs w-fit">
-                                {"*" + errors.teamname}
+                                {"*" + validationErrors.teamname}
                             </Typography>
                         )}
 
                         <Input
                             type="email"
-                            label="Member 1 Email"
+                            label="Member 1 Email (Optional)"
                             size="md"
                             name="email1"
                             value={formData.email1}
                             onChange={handleChange}
                         />
-                        {errors.email1 && (
+                        {validationErrors.email1 && (
                             <Typography className="text-red-500 text-xs w-fit">
-                                {errors.email1 || ""}
+                                {validationErrors.email1 || ""}
                             </Typography>
                         )}
 
                         <Input
                             type="email"
-                            label="Member 2 Email"
+                            label="Member 2 Email (Optional)"
                             size="md"
                             name="email2"
                             value={formData.email2}
                             onChange={handleChange}
                         />
-                        {errors.email2 && (
+                        {validationErrors.email2 && (
                             <Typography className="text-red-500 text-xs w-fit">
-                                {errors.email2 || ""}
+                                {validationErrors.email2 || ""}
                             </Typography>
                         )}
 
                         <Input
                             type="email"
-                            label="Member 3 Email"
+                            label="Member 3 Email (Optional)"
                             size="md"
                             name="email3"
                             value={formData.email3}
                             onChange={handleChange}
                         />
-                        {errors.email3 && (
+                        {validationErrors.email3 && (
                             <Typography className="text-red-500 text-xs w-fit">
-                                {errors.email3 || ""}
+                                {validationErrors.email3 || ""}
                             </Typography>
                         )}
                         {showError && error && (
@@ -201,6 +206,7 @@ const TeamRegistration = ({ open, setOpen, selectedHackathonId }) => {
                             </Button>
                         </div>
                     </form>
+                    </CardBody>
                 </Card>
             </Dialog>
         </div>

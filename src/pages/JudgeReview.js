@@ -31,7 +31,7 @@ import {
     fetchHackathons,
     selectHackathons,
 } from "../features/hackathon/hackathonSlice";
-import { selectUserDetails } from "../features/user/userSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
 
 const themes = [
     { name: "Life Sciences", value: "lifesciences" },
@@ -50,6 +50,7 @@ const JudgeReview = () => {
     }, [teamsData]);
 
     const userData = useSelector(selectUserDetails);
+    const token = useSelector(selectUserToken);
 
     const hackathons = useSelector(selectHackathons);
     const [selectedHackathonId, setSelectedHackathonId] = React.useState(null);
@@ -57,10 +58,21 @@ const JudgeReview = () => {
     const [selectedIdeaId, setSelectedIdeaId] = React.useState(null);
 
     useEffect(() => {
+        if (userData?.role === "judge") {
+            dispatch(
+                fetchJudgeTeamsByHackathonId({
+                    hackathonId: userData?.assignedHackathon, token
+                })
+            );
+        }
+    }, [userData]);
+
+    useEffect(() => {
         if (ideas.length > 0) {
             setSelectedIdeaId(ideas[0].teamId);
         }
     }, [ideas]);
+
     useEffect(() => {
         if (userData && !userData.available) {
             setSelectedHackathonId(userData?.assignedHackathon);

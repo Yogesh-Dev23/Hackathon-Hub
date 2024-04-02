@@ -31,7 +31,11 @@ import {
 } from "../features/team/teamSlice";
 import { repoSubmission } from "../features/team/teamSlice";
 import { TEAMS, USER } from "../constants";
-import { selectUserDetails, selectUserId } from "../features/user/userSlice";
+import {
+    selectUserDetails,
+    selectUserId,
+    selectUserToken,
+} from "../features/user/userSlice";
 import { toast } from "react-toastify";
 
 const DOMAINS = [
@@ -126,6 +130,8 @@ const IdeaDetails = () => {
         setIdeaData((prevstate) => ({ ...prevstate, [name]: value }));
     };
 
+    const token = useSelector(selectUserToken);
+
     const [validationIdeaErrors, setValidationIdeaErrors] = useState({});
 
     const handleSubmit = async () => {
@@ -151,12 +157,14 @@ const IdeaDetails = () => {
             setValidationIdeaErrors(newErrors);
         } else {
             try {
-                console.log(ideaData);
+                // console.log(ideaData);
                 await dispatch(
-                    ideaSubmission({ hackathonId, userId, ideaData })
+                    ideaSubmission({ hackathonId, userId, ideaData, token })
                 ).unwrap();
                 toast.success("Idea submitted successfully!");
-                await dispatch(fetchTeamDetails(userData.userId)).unwrap();
+                await dispatch(
+                    fetchTeamDetails({ userId: userData.userId, token })
+                ).unwrap();
                 console.log(teamsData);
                 console.log(teamsData);
             } catch (error) {
@@ -195,10 +203,10 @@ const IdeaDetails = () => {
             try {
                 console.log(repoData);
                 await dispatch(
-                    repoSubmission({ hackathonId, userId, repoData })
+                    repoSubmission({ hackathonId, userId, repoData, token })
                 ).unwrap();
                 toast.success("Idea submitted successfully!");
-                await dispatch(fetchTeamDetails(userData.userId)).unwrap();
+                await dispatch(fetchTeamDetails({ userId: userData.userId, token })).unwrap()
             } catch (error) {
                 toast.error(`Error: ${error?.message}`);
             }

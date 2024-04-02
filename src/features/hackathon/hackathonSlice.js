@@ -28,14 +28,14 @@ export const fetchHackathons = createAsyncThunk(
 );
 export const hackathonCreation = createAsyncThunk(
     "hackathon/hackathonCreation",
-    async (hackathonData, thunkAPI) => {
+    async ({formData, token}, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.post(
                 "http://localhost:8080/Admin/hackathon",
-                hackathonData,
+                formData,
                 { headers }
             );
             // console.log(response);
@@ -52,7 +52,7 @@ export const hackathonCreation = createAsyncThunk(
 
 export const hackathonEnd = createAsyncThunk(
     "hackathon/hackathonEnd",
-    async (hackathonId, thunkAPI) => {
+    async ({hackathonId, token}, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -65,6 +65,21 @@ export const hackathonEnd = createAsyncThunk(
             // const response2 = await axios.get(
             //     "http://localhost:8080/Hackathon"
             // );
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const newRequest = createAsyncThunk(
+    "hackathon/newRequest",
+    async (formData, thunkAPI) => {
+        try {
+            const response = await axios.post(
+                "http://localhost:8080/ContactDetails/Contact",
+                formData
+            );
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -116,6 +131,20 @@ const hackathonSlice = createSlice({
                 state.error = null;
             })
             .addCase(hackathonEnd.rejected, (state, action) => {
+                state.loading = false;
+                // state.data = null;
+                state.error = action.payload; // Set error payload
+            })
+            .addCase(newRequest.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(newRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                // state.data = action.payload; // Extract data from the response
+                state.error = null;
+            })
+            .addCase(newRequest.rejected, (state, action) => {
                 state.loading = false;
                 // state.data = null;
                 state.error = action.payload; // Set error payload

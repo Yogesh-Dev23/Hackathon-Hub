@@ -14,7 +14,7 @@ import HackathonRequestCard from "../components/HackathonRequestCard";
 const HackathonRequests = () => {
     return (
         <BaseLayout>
-            <div className="container py-2 mx-auto  px-1 flexjustify-center">
+            <div className="container py-4 mx-auto  px-1 flexjustify-center">
                 <Typography
                     variant="h3"
                     className="mb-3 text-incedo-secondary-600"
@@ -38,7 +38,7 @@ const HackathonRequests = () => {
                             <HackathonRequestCard
                                 name={request.name}
                                 email={request.email}
-                                request={request.request}
+                                details={request.details}
                             />
                         ))
                     )}

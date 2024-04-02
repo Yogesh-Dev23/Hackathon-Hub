@@ -9,6 +9,8 @@ import {
 } from "../features/hackathon/hackathonSlice";
 import { HACKATHONS } from "../constants";
 import { toast } from "react-toastify";
+import { selectUserToken } from "../features/user/userSlice";
+import { Link } from "react-router-dom";
 
 const TABLE_HEAD = [
     "Hackathon",
@@ -24,6 +26,7 @@ const ListHackathon = () => {
     // useSelector((state) => state.hackathon.hackathons.data);
     const hackathonsData = useSelector(selectHackathons);
     const [hackathons, setHackathons] = useState(hackathonsData);
+    const token = useSelector(selectUserToken);
 
     useEffect(() => {
         setHackathons(hackathonsData);
@@ -33,7 +36,8 @@ const ListHackathon = () => {
     const dispatch = useDispatch();
     const handleHackathonEnd = async (id) => {
         try {
-            await dispatch(hackathonEnd(id)).unwrap();
+            console.log({ hackathonId: id, token });
+            await dispatch(hackathonEnd({ hackathonId: id, token })).unwrap();
             toast.success(
                 `${
                     hackathons.find((hackathon) => hackathon.hackathonId === id)
@@ -41,7 +45,7 @@ const ListHackathon = () => {
                 } ended succesfully!`
             );
             // try {
-                await dispatch(fetchHackathons()).unwrap();
+            await dispatch(fetchHackathons()).unwrap();
             // } catch (error) {
             //     toast.error(`Error: ${error?.message}`);
             // }
@@ -134,19 +138,35 @@ const ListHackathon = () => {
                                         />
                                     </td> */}
                                     <td className="p-4 hidden lg:table-cell">
-                                        <Button
-                                            className="flex items-center gap-3"
-                                            size="sm"
-                                            disabled={hackathon?.isCompleted}
-                                            onClick={() => {
-                                                handleHackathonEnd(
-                                                    hackathon.hackathonId
-                                                );
-                                            }}
-                                        >
-                                            {/* <PencilIcon className="h-4 w-4" /> */}
-                                            End
-                                        </Button>
+                                        {hackathon.isCompleted ? (
+                                            <Link
+                                                to={`/results/${hackathon.hackathonId}`}
+                                            >
+                                                <Button
+                                                    size="sm"
+                                                    className="h-8"
+                                                    color="green"
+                                                >
+                                                    Result
+                                                </Button>
+                                            </Link>
+                                        ) : (
+                                            <Button
+                                                className="flex items-center gap-3"
+                                                size="sm"
+                                                disabled={
+                                                    hackathon?.isCompleted
+                                                }
+                                                onClick={() => {
+                                                    handleHackathonEnd(
+                                                        hackathon.hackathonId
+                                                    );
+                                                }}
+                                            >
+                                                {/* <PencilIcon className="h-4 w-4" /> */}
+                                                End
+                                            </Button>
+                                        )}
                                         {/* <Button
                                             className="flex items-center gap-3"
                                             size="sm"

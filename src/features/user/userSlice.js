@@ -7,6 +7,7 @@ const token = Cookies.get("token");
 
 const initialState = {
     data: null,
+    token: "",
     loading: false,
     error: null,
 
@@ -88,7 +89,7 @@ export const userLogin = createAsyncThunk(
 
 export const reattemptLogin = createAsyncThunk(
     "user/reattemptLogin",
-    async ({ userId }, thunkAPI) => {
+    async ({ userId, token }, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -142,6 +143,9 @@ const userSlice = createSlice({
             state.data = null;
             // Cookies.remove("userData");
         },
+        updateToken(state, action) {
+            state.token = action.payload;
+        }
         // reattemptLogin(state, action) {
         //     // const userCookie = Cookies.get("userData");
         //     // if (userCookie) {
@@ -279,13 +283,15 @@ const userSlice = createSlice({
 });
 
 export const selectUserDetails = (state) => state.user.data;
+export const selectUserToken = (state) => state.user.token;
 export const selectUserId = (state) => state.user.data?.userId;
 export const selectErrorUser = (state) => state.user.error;
 export const selectLoadingUser = (state) => state.user.loading;
 
 export const {
     logout,
+    updateToken
     // reattemptLogin,
-    successTeamRegistration,
+    // successTeamRegistration,
 } = userSlice.actions;
 export default userSlice.reducer;

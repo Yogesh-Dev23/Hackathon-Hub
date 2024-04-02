@@ -3,6 +3,8 @@ import { Input, Button, Spinner } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     otpVerification,
+    selectErrorUser,
+    selectLoadingUser,
     selectUserDetails,
     userLogin,
     userRegistration,
@@ -73,9 +75,9 @@ const Signup = ({
     // const error = useSelector((state) => state.user.register.error);
     // const loading = useSelector((state) => state.user.register.loading);
 
-    const error = useSelector((state) => state.user.error);
+    const error = useSelector(selectErrorUser);
     const [showError, setShowError] = useState(false);
-    const loading = useSelector((state) => state.user.loading);
+    const loading = useSelector(selectLoadingUser);
 
     const dispatch = useDispatch();
     const loginData = { email: formData.email, password: formData.password };
@@ -83,9 +85,9 @@ const Signup = ({
 
     const navigate = useNavigate();
     const handleSignInClick = () => {
-        handleToggleSignUp(false)
-        handleToggleSignIn(true)
-    }
+        handleToggleSignUp(false);
+        handleToggleSignIn(true);
+    };
 
     useEffect(() => {
         setShowError(false);
@@ -184,7 +186,11 @@ const Signup = ({
                         color="gray"
                         className="mb-4 grid h-28 place-items-center"
                     >
-                        <Typography variant="h5" color="white" className="text-center">
+                        <Typography
+                            variant="h5"
+                            color="white"
+                            className="text-center"
+                        >
                             Register Your Account
                         </Typography>
                     </CardHeader>
@@ -395,17 +401,17 @@ const Signup = ({
                                         Sign up
                                     </Button>
                                     <Typography
-                                            variant="small"
-                                            className="mt-2 flex justify-center"
+                                        variant="small"
+                                        className="mt-2 flex justify-center"
+                                    >
+                                        Already have an account?
+                                        <Link
+                                            className="ml-1 text-sm font-bold cursor-pointer text-blue-gray"
+                                            onClick={handleSignInClick}
                                         >
-                                            Already have an account?
-                                            <Link
-                                               className="ml-1 text-sm font-bold cursor-pointer text-blue-gray"
-                                                onClick={handleSignInClick}
-                                            >
-                                                Login
-                                            </Link>
-                                        </Typography>
+                                            Login
+                                        </Link>
+                                    </Typography>
                                 </div>
                             </form>
                         )}

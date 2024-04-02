@@ -5,6 +5,8 @@ import {
     changePassword,
     forgotPassword,
     otpVerification,
+    selectErrorUser,
+    selectLoadingUser,
     selectUserDetails,
     userLogin,
     userRegistration,
@@ -62,9 +64,9 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
         }
     };
 
-    const error = useSelector((state) => state.user.error);
+    const error = useSelector(selectErrorUser);
     const [showError, setShowError] = useState(false);
-    const loading = useSelector((state) => state.user.loading);
+    const loading = useSelector(selectLoadingUser);
 
     const dispatch = useDispatch();
     const Email = { email: formData.email };

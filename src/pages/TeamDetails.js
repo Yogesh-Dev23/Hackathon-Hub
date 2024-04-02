@@ -31,17 +31,18 @@ import {
     fetchTeamDetails,
     selectTeamByHackathonId,
 } from "../features/team/teamSlice";
-import { selectUserDetails } from "../features/user/userSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
 import { selectHackathonById } from "../features/hackathon/hackathonSlice";
-
 
 const TeamDetails = () => {
     const userData = useSelector(selectUserDetails);
     const [user, setUser] = useState(userData);
 
+    const token = useSelector(selectUserToken)
+
     useEffect(() => {
-        if (userData) {
-            dispatch(fetchTeamDetails(userData?.userId));
+        if (userData?.role === "participant") {
+            dispatch(fetchTeamDetails({ userId: userData?.userId, token }));
             setUser(userData);
         }
     }, [userData]);
@@ -51,9 +52,9 @@ const TeamDetails = () => {
     );
 
     const hackthonDetails = useSelector((state) =>
-    selectHackathonById(state, userData?.assignedHackathon))
+        selectHackathonById(state, userData?.assignedHackathon)
+    );
     const dispatch = useDispatch();
-
 
     return (
         <BaseLayout>

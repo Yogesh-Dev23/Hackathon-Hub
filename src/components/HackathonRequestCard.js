@@ -7,7 +7,7 @@ import {
     Avatar,
 } from "@material-tailwind/react";
 
-const HackathonRequestCard = ({name, email, request}) => {
+const HackathonRequestCard = ({name, email, details}) => {
     return (
         <div>
             <Card
@@ -34,7 +34,7 @@ const HackathonRequestCard = ({name, email, request}) => {
                 </CardHeader>
                 <CardBody className="mb-6 p-0">
                     <Typography>
-                        Request: &quot;{request}&quot;
+                        Details: &quot;{details}&quot;
                     </Typography>
                 </CardBody>
             </Card>

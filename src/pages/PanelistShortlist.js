@@ -30,7 +30,8 @@ import {
     fetchHackathons,
     selectHackathons,
 } from "../features/hackathon/hackathonSlice";
-import { selectUserDetails } from "../features/user/userSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
+import Cookies from "js-cookie";
 
 const themes = [
     { name: "Life Sciences", value: "lifesciences" },
@@ -50,6 +51,7 @@ const PanelistShortlist = () => {
     }, [teamsData]);
 
     const userData = useSelector(selectUserDetails);
+    const token = useSelector(selectUserToken);
 
     const hackathons = useSelector(selectHackathons);
 
@@ -89,15 +91,16 @@ const PanelistShortlist = () => {
     };
 
     useEffect(() => {
-        if (userData) {
+        if (userData?.role === "panelist") {
             dispatch(
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData.assignedHackathon,
                     panelistid: userData.userId,
+                    token,
                 })
             );
         }
-    }, [userData]);
+    }, []);
 
     return (
         <BaseLayout>
@@ -218,7 +221,9 @@ const PanelistShortlist = () => {
                                                           <>
                                                               {idea.status ===
                                                               "submitted" ? null : idea.status ===
-                                                                "selected" ? (
+                                                                    "selected" ||
+                                                                idea.status ===
+                                                                    "implemented" ? (
                                                                   <svg
                                                                       xmlns="http://www.w3.org/2000/svg"
                                                                       viewBox="0 0 24 24"

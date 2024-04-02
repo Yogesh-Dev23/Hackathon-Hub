@@ -20,7 +20,7 @@ import {
     rejectTeam,
 } from "../features/team/teamSlice";
 import { fetchHackathons } from "../features/hackathon/hackathonSlice";
-import { selectUserDetails } from "../features/user/userSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
 import { toast } from "react-toastify";
 
 const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
@@ -44,6 +44,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
     // const hackathons = useSelector((state) => state.hackathon.hackathons.data);
     // const user = USER;
     const userData = useSelector(selectUserDetails);
+    const token = useSelector(selectUserToken)
     // useSelector((state) => state.user.login?.data?.data);
     // console.log(hackathons);
 
@@ -86,6 +87,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 dispatch(
                     acceptTeam({
                         teamId: selectedIdea?.teamId,
+                        token
                     })
                 ).unwrap(),
                 {
@@ -102,6 +104,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
                     panelistid: userData?.userId,
+                    token
                 })
             ).unwrap();
         } catch (error) {
@@ -115,6 +118,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 dispatch(
                     rejectTeam({
                         teamId: selectedIdea?.teamId,
+                        token
                     })
                 ).unwrap(),
                 {
@@ -131,6 +135,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
                     panelistid: userData?.userId,
+                    token
                 })
             ).unwrap();
         } catch (error) {

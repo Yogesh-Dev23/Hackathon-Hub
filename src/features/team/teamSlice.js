@@ -12,7 +12,7 @@ const initialState = {
 };
 export const teamRegistration = createAsyncThunk(
     "team/teamRegistration",
-    async ({ hackathonId, userId, team }, thunkAPI) => {
+    async ({ hackathonId, userId, team, token }, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -31,7 +31,7 @@ export const teamRegistration = createAsyncThunk(
 );
 export const ideaSubmission = createAsyncThunk(
     "team/ideaSubmission",
-    async ({ hackathonId, userId, ideaData }, thunkAPI) => {
+    async ({ hackathonId, userId, ideaData, token }, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export const ideaSubmission = createAsyncThunk(
 
 export const repoSubmission = createAsyncThunk(
     "team/repoSubmission",
-    async ({ hackathonId, userId, repoData }, thunkAPI) => {
+    async ({ hackathonId, userId, repoData, token }, thunkAPI) => {
         try {
             // console.log({ hackathonId, userId, repoData });
             const headers = {
@@ -62,6 +62,7 @@ export const repoSubmission = createAsyncThunk(
                 repoData,
                 { headers }
             );
+            console.log(response)
             return response.data;
         } catch (error) {
             // console.log(error);
@@ -72,7 +73,7 @@ export const repoSubmission = createAsyncThunk(
 
 export const fetchTeamDetails = createAsyncThunk(
     "hackathon/fetchTeamDetails",
-    async (userId, thunkAPI) => {
+    async ({userId, token}, thunkAPI) => {
         try {
             // console.log(userId);
             // if (userId) {
@@ -95,7 +96,7 @@ export const fetchTeamDetails = createAsyncThunk(
 
 export const fetchJudgeTeamsByHackathonId = createAsyncThunk(
     "team/fetchJudgeTeamsByHackathonId",
-    async ({ hackathonId }, thunkAPI) => {
+    async ({ hackathonId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
             const headers = {
@@ -118,7 +119,7 @@ export const fetchJudgeTeamsByHackathonId = createAsyncThunk(
 
 export const fetchPanelistTeamsByHackathonId = createAsyncThunk(
     "team/fetchPanelistTeamsByHackathonId",
-    async ({ hackathonId, panelistid }, thunkAPI) => {
+    async ({ hackathonId, panelistid, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
             const headers = {
@@ -142,7 +143,7 @@ export const fetchPanelistTeamsByHackathonId = createAsyncThunk(
 
 export const rejectTeam = createAsyncThunk(
     "team/rejectTeam",
-    async ({ teamId }, thunkAPI) => {
+    async ({ teamId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
             console.log(teamId)
@@ -168,7 +169,7 @@ export const rejectTeam = createAsyncThunk(
 
 export const acceptTeam = createAsyncThunk(
     "team/acceptTeam",
-    async ({ teamId, hackathonId, panelistid }, thunkAPI) => {
+    async ({ teamId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
             // if (hackathonId !== -1 && panelistid && teamId) {
@@ -193,7 +194,7 @@ export const acceptTeam = createAsyncThunk(
 
 export const rateTeam = createAsyncThunk(
     "team/rateTeam",
-    async ({ teamId, rating, feedback, userId }, thunkAPI) => {
+    async ({ teamId, rating, feedback, userId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
             const headers = {

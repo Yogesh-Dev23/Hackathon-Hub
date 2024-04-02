@@ -25,6 +25,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { EVALUATORS, HACKATHONS } from "../constants";
 import { toast } from "react-toastify";
+import { selectUserToken } from "../features/user/userSlice";
 
 const EvaluatorAssign = () => {
     const hackathons = useSelector(selectHackathons);
@@ -42,6 +43,7 @@ const EvaluatorAssign = () => {
         evaluators?.filter((evaluator) => evaluator.role === "panelist")
     );
 
+    const token = useSelector(selectUserToken);
     // console.log(JUDGES);
     // console.log(PANELISTS);
 
@@ -104,23 +106,26 @@ const EvaluatorAssign = () => {
             };
 
             // console.log(data);
-            await toast.promise(dispatch(assignEvaluator(data)).unwrap(), 
-            {
-                pending: "Assigning...",
-                success: `${selectedEvaluator.name} assigned to ${selectedHackathon.name} successfully!`,
-                error: {
-                    render({ data }) {
-                        return `Error: ${data?.message}`;
+            await toast.promise(
+                dispatch(
+                    assignEvaluator({ evaluatorData: data, token })
+                ).unwrap(),
+                {
+                    pending: "Assigning...",
+                    success: `${selectedEvaluator.name} assigned to ${selectedHackathon.name} successfully!`,
+                    error: {
+                        render({ data }) {
+                            return `Error: ${data?.message}`;
+                        },
+                        // other options
+                        // icon: "🟢",
                     },
-                    // other options
-                    // icon: "🟢",
-                },
-            }
-            // {
-            //     pending: "Assigning...",
-            //     success: `${selectedEvaluator.name} assigned to ${selectedHackathon.name} successfully!`,
-            //     error: "A problem occured while assigning. Please try again",
-            // }
+                }
+                // {
+                //     pending: "Assigning...",
+                //     success: `${selectedEvaluator.name} assigned to ${selectedHackathon.name} successfully!`,
+                //     error: "A problem occured while assigning. Please try again",
+                // }
             );
             // toast.success(`${selectedEvaluator.name} assigned to ${selectedHackathon.name} successfully!`)
             setSelectedEvaluator({
@@ -136,9 +141,9 @@ const EvaluatorAssign = () => {
                 hackathonId: 0,
                 name: "",
             });
-            await dispatch(fetchEvaluators()).unwrap();
+            await dispatch(fetchEvaluators({ token })).unwrap();
         } catch (error) {
-            console.log(error?.message)
+            console.log(error?.message);
             // toast.error(`Error: ${error?.message}`);
         }
     };

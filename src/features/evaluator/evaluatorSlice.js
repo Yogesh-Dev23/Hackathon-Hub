@@ -15,17 +15,16 @@ const initialState = {
 
 export const fetchEvaluators = createAsyncThunk(
     "evaluator/fetchEvaluators",
-    async (thunkAPI) => {
+    async ({ token }, thunkAPI) => {
         try {
             const headers = {
-                Authorization:
-                    `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             };
             const response = await axios.get(
                 "http://localhost:8080/Admin/Evaluator",
                 { headers }
             );
-            console.log(response)
+            console.log(response);
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -35,11 +34,10 @@ export const fetchEvaluators = createAsyncThunk(
 
 export const registerEvaluator = createAsyncThunk(
     "evaluator/registerEvaluator",
-    async (evaluatorData, thunkAPI) => {
+    async ({evaluatorData, token}, thunkAPI) => {
         try {
             const headers = {
-                Authorization:
-                    `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             };
             const response = await axios.post(
                 "http://localhost:8080/Admin/Evaluator",
@@ -58,11 +56,10 @@ export const registerEvaluator = createAsyncThunk(
 
 export const assignEvaluator = createAsyncThunk(
     "evaluator/assignEvaluator",
-    async (evaluatorData, thunkAPI) => {
+    async ({evaluatorData, token}, thunkAPI) => {
         try {
             const headers = {
-                Authorization:
-                    `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             };
             const response = await axios.post(
                 "http://localhost:8080/Admin/assign",
