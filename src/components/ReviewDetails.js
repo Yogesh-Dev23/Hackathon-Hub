@@ -11,40 +11,20 @@ import {
     DialogHeader,
     DialogFooter,
     Rating,
+    Textarea,
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
 import { rateTeam } from "../features/team/teamSlice";
 import { selectUserDetails } from "../features/user/userSlice";
-const ReviewDetails = ({
-    hackathons,
-    selectedIdeaId,
-    IDEAS,
-    // reviewedIdeas,
-    // setReviewedIdeas,
-}) => {
-    const dateConverter = (date) => {
-        const shortdate = new Date(date).toLocaleString("en-GB", {
-            weekday: "long",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
+import { toast } from "react-toastify";
 
-        const time = new Date(date).toLocaleTimeString("en-GB", {
-            hour12: false,
-        });
-
-        return `${shortdate}, ${time}`;
-    };
-
+const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
     const dispatch = useDispatch();
     const userData = useSelector(selectUserDetails);
-    // useSelector((state) => state.user.login?.data?.data);
-    // console.log(hackathons);
+    const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
-    //use hackathonSlice useSelector to fetch data of assigned hackthon here
     const [selectedHackathon, setSelectedHackathon] = useState(
         hackathons?.find(
             (hackathon) => hackathon.hackathonId === userData?.assignedHackathon
@@ -56,13 +36,23 @@ const ReviewDetails = ({
     );
 
     useEffect(() => {
-        // console.log(selectedIdeaId)
         setSelectedIdea(
             IDEAS?.find((idea) => idea?.teamId === selectedIdeaId) || IDEAS[0]
         );
     }, [selectedIdeaId]);
 
+    useEffect(() => {
+        if (selectedIdea) {
+            setReviewSubmitted(
+                selectedIdea?.userIds?.filter(
+                    (user) => user === userData.userId
+                ).length > 0
+            );
+        }
+    }, [selectedIdea]);
+
     const [openRules, setOpenRules] = useState(false);
+
 
     const handleOpenRules = () => {
         setOpenRules(!openRules);
@@ -70,18 +60,46 @@ const ReviewDetails = ({
     const [reviewData, setReviewData] = useState({ rating: 0 });
 
     const handleRating = (rate) => {
-        // console.log(rate);
-        setReviewData({ rating: rate, teamId: selectedIdeaId });
-        // setReviewedIdeas([
-        //     ...reviewedIdeas,
-        //     { rating: rate, teamId: selectedIdeaId },
-        // ]);
+        setReviewData({
+            ...reviewData,
+            rating: rate,
+            teamId: selectedIdeaId,
+            userId: userData?.userId,
+        });
     };
 
-    useEffect(() => {
+    const handleFeedback = (e) => {
+        const { name, value } = e.target;
+        setReviewData({ ...reviewData, feedback: value });
+    };
+    const [validationErrors, setValidationErrors] = useState({});
+    const handleReviewSubmit = async () => {
         //dispatch judge review here
-        dispatch(rateTeam(reviewData));
-    }, [reviewData]);
+        const newErrors = {};
+        if (reviewData.rating === 0) {
+            newErrors.rating = "Rating is required";
+        }
+        if (!reviewData.feedback) {
+            newErrors.rating = "Feedback is required";
+        }
+        if (reviewData.feedback && reviewData.feedback.length > 255) {
+            newErrors.feedback =
+                "Feedback Should Not Contain More Than 255 Characters";
+        }
+        if (Object.keys(newErrors).length > 0) {
+            setValidationErrors(newErrors);
+        } else {
+            try {
+                console.log(reviewData);
+                await dispatch(rateTeam(reviewData)).unwrap();
+                toast.success("Review submitted succesfully");
+            } catch (error) {
+                toast.error(`Error ${error?.message}`);
+            }
+        }
+        setValidationErrors(newErrors);
+    };
+
     return (
         <>
             {/* {!loading &&  */}
@@ -134,8 +152,8 @@ const ReviewDetails = ({
                         className="md:min-h-[52.2vh] md:max-h-[52.2vh] overflow-auto"
                     >
                         <CardBody>
-                            <div className="w-full grid md:grid-cols-12">
-                                <div className="md:col-span-9 w-full rounded-2xl p-2 py-1 text-incedo-tertiary-900">
+                            <div className="w-full">
+                                <div className=" w-full rounded-2xl p-2 py-1 text-incedo-tertiary-900">
                                     <Typography variant="h3">
                                         {selectedIdea?.ideaTitle || ""}
                                     </Typography>
@@ -146,7 +164,7 @@ const ReviewDetails = ({
                                         {selectedIdea?.ideaDomain || ""}
                                     </Typography>
                                 </div>
-                                <div className="md:col-span-3 px-2 flex items-center justify-end">
+                                {/* <div className="md:col-span-3 px-2 flex items-center justify-end">
                                     <Rating
                                         unratedColor="amber"
                                         ratedColor="amber"
@@ -171,51 +189,8 @@ const ReviewDetails = ({
                                         //     ).length > 0
                                         // }
                                     />
-                                    {/* <IconButton
-                                    variant="text"
-                                    onClick={() => {
-                                        handleIdeaAccept(selectedIdea.teamId);
-                                    }}
-                                    disabled={
-                                        selectedIdea.status !== "submitted"
-                                    }
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                        className="w-6 h-6 fill-green-400"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                </IconButton>
-                                <IconButton
-                                    variant="text"
-                                    onClick={() => {
-                                        handleIdeaReject(selectedIdea.teamId);
-                                    }}
-                                    disabled={
-                                        selectedIdea.status !== "submitted"
-                                    }
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                        className="w-6 h-6 fill-red-700"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                </IconButton> */}
-                                </div>
+                                   
+                                </div> */}
                             </div>
 
                             <div className="w-full mt-1 rounded-2xl p-2">
@@ -239,10 +214,49 @@ const ReviewDetails = ({
                                     rel="noopener noreferrer"
                                 >
                                     <Typography className="underline">
-                                            Files Link
+                                        Files Link
                                     </Typography>
                                 </Link>
                             </div>
+                            {reviewSubmitted ? (
+                                <Typography className="p-2 py-1 text-green-400">
+                                    Review Submitted &#10004;
+                                </Typography>
+                            ) : (
+                                <div>
+                                    <div className="w-full rounded-2xl flex gap-3 p-2 py-1 items-center">
+                                        Rating*:
+                                        <Rating
+                                            unratedColor="amber"
+                                            ratedColor="amber"
+                                            value={reviewData?.rating || 0}
+                                            onChange={(value) =>
+                                                handleRating(value)
+                                            }
+                                            // readonly=
+                                        />
+                                    </div>
+                                    <div className="w-full mt-2 rounded-2xl flex gap-3 p-2 py-1 items-center">
+                                        <Textarea
+                                            // disabled={
+                                            // }
+                                            label="Feedback*"
+                                            name="feedback"
+                                            value={reviewData?.feedback || ""}
+                                            onChange={handleFeedback}
+                                        />
+                                    </div>
+                                    <div className="flex gap-2 p-2 justify-center md:justify-start w-full">
+                                        <Button
+                                            size="sm"
+                                            className="rounded-md"
+                                            onClick={handleReviewSubmit}
+                                        >
+                                            Submit Review
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </CardBody>
                     </Card>
                 ) : null}

@@ -44,38 +44,18 @@ const PanelistShortlist = () => {
 
     const teamsData = useSelector(selectTeams);
     const [ideas, setIdeas] = useState([]);
-    // useSelector((state) => state.team.judgeteams.data?.data) || [];
 
     useEffect(() => {
-        setIdeas(teamsData);
+        setIdeas(teamsData?.filter((team) => team.status !== "registered"));
     }, [teamsData]);
 
-    // const IDEAS = TEAMS;
-    // useSelector((state) => state.team.panelistteams.data?.data) || [];
-
-    // const user = USER;
     const userData = useSelector(selectUserDetails);
-    // useSelector((state) => state.user.login?.data?.data);
-    // console.log(USER);
-    // useEffect(() => {
-    //     dispatch(fetchHackathons());
-    // }, [dispatch]);
 
     const hackathons = useSelector(selectHackathons);
-    // HACKATHONS;
-    // useSelector((state) => state.hackathon.hackathons.data) || [];
-    // console.log(hackathons);
-
-    // const [filteredHackathons, setFilteredHackathons] =
-    //     React.useState(hackathons);
 
     const [selectedHackathonId, setSelectedHackathonId] = React.useState(null);
 
-    const [selectedIdeaId, setSelectedIdeaId] = React.useState(
-        null
-        // ideas[0]?.teamId
-    );
-    // console.log(ideas[0]);
+    const [selectedIdeaId, setSelectedIdeaId] = React.useState(null);
 
     useEffect(() => {
         if (userData) {

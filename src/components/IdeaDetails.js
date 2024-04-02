@@ -44,15 +44,10 @@ const DOMAINS = [
 const IdeaDetails = () => {
     const dispatch = useDispatch();
     const userData = useSelector(selectUserDetails);
-    // useSelector((state) => state.user.login.data);
     const hackathonId = userData?.assignedHackathon || null;
     const userId = userData?.userId || null;
 
-    // const teamData=useSelector(state=>state.team.teamdetails.data)
     const teamsData = useSelector(selectTeams);
-    // const userData = useSelector(selectUserDetails);
-    // TEAMS
-    // useSelector((state) => state.team.teamdetails.data);
 
     const [teamDetails, setTeamDetails] = useState({});
     useEffect(() => {
@@ -65,7 +60,18 @@ const IdeaDetails = () => {
         }
     }, [teamsData, userData]);
     console.log(teamDetails);
-    // const status = teamDetails.length > 0 ? teamDetails[0].status : null;
+
+    const [isLeader, setIsLeader] = useState(false);
+
+    useEffect(() => {
+        if (teamDetails.teamUserDetailsDTOs) {
+            setIsLeader(
+                teamDetails?.teamUserDetailsDTOs?.find(
+                    (member) => member?.userId === userData?.userId
+                )?.leader === true
+            );
+        }
+    }, [teamDetails]);
 
     const [repoData, setRepoData] = useState({});
     const [ideaData, setIdeaData] = useState({});
@@ -73,10 +79,9 @@ const IdeaDetails = () => {
     const [isShortlisted, setIsShortlisted] = useState(false);
     const [isImplemented, setIsImplemented] = useState(false);
     const [isRejected, setIsRejected] = useState(false);
-    // const [didSubmit, setDidSubmit] = useState(false)
     useEffect(() => {
         if (teamDetails?.status === "submitted") {
-            setIsSubmitted(true); // Set isSubmitted to true when status is 'selected'
+            setIsSubmitted(true);
             setIdeaData({
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
@@ -84,7 +89,7 @@ const IdeaDetails = () => {
             });
         }
         if (teamDetails?.status === "selected") {
-            setIsShortlisted(true); // Set isSubmitted to true when status is 'selected'
+            setIsShortlisted(true);
             setIdeaData({
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
@@ -92,13 +97,11 @@ const IdeaDetails = () => {
             });
         }
         if (teamDetails?.status === "implemented") {
-            setIsImplemented(true); // Set isSubmitted to true when status is 'selected'
+            setIsImplemented(true);
             setIdeaData({
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
                 ideaDomain: teamDetails.ideaDomain,
-                // ideaFiles: teamDetails.ideaFiles,
-                // ideaRepo: ideaData.ideaRepo,
             });
 
             setRepoData({
@@ -152,10 +155,8 @@ const IdeaDetails = () => {
                 await dispatch(
                     ideaSubmission({ hackathonId, userId, ideaData })
                 ).unwrap();
-                // setIsSubmitted(true);
                 toast.success("Idea submitted successfully!");
                 await dispatch(fetchTeamDetails(userData.userId)).unwrap();
-                // toast.success("Fetched Teams");
                 console.log(teamsData);
                 console.log(teamsData);
             } catch (error) {
@@ -163,7 +164,6 @@ const IdeaDetails = () => {
             }
         }
         setValidationIdeaErrors(newErrors);
-        // setDidSubmit(true)
     };
 
     const handleRepoChange = (e) => {
@@ -197,7 +197,6 @@ const IdeaDetails = () => {
                 await dispatch(
                     repoSubmission({ hackathonId, userId, repoData })
                 ).unwrap();
-                // setIsImplemented(true);
                 toast.success("Idea submitted successfully!");
                 await dispatch(fetchTeamDetails(userData.userId)).unwrap();
             } catch (error) {
@@ -205,7 +204,6 @@ const IdeaDetails = () => {
             }
         }
         setValidationRepoErrors(newErrors);
-        // setDidSubmit(true)
     };
 
     return (
@@ -216,6 +214,7 @@ const IdeaDetails = () => {
             <CardBody className="w-full lg:w-2/3">
                 <Input
                     disabled={
+                        !isLeader ||
                         isSubmitted ||
                         isShortlisted ||
                         isRejected ||
@@ -236,6 +235,7 @@ const IdeaDetails = () => {
                         <MenuHandler>
                             <Button
                                 disabled={
+                                    !isLeader ||
                                     isSubmitted ||
                                     isShortlisted ||
                                     isRejected ||
@@ -286,6 +286,7 @@ const IdeaDetails = () => {
                 <div className="mt-3">
                     <Textarea
                         disabled={
+                            !isLeader ||
                             isSubmitted ||
                             isShortlisted ||
                             isRejected ||
@@ -302,7 +303,8 @@ const IdeaDetails = () => {
                         </Typography>
                     )}
                 </div>
-                {!isSubmitted &&
+                {isLeader &&
+                    !isSubmitted &&
                     !isRejected &&
                     !isImplemented &&
                     !isShortlisted && (
@@ -324,7 +326,7 @@ const IdeaDetails = () => {
                             <Input
                                 label="Repository Link"
                                 value={repoData?.ideaRepo || ""}
-                                disabled={isImplemented}
+                                disabled={!isLeader || isImplemented}
                                 name="ideaRepo"
                                 onChange={handleRepoChange}
                                 icon={
@@ -354,7 +356,7 @@ const IdeaDetails = () => {
                         <div className="mt-3">
                             <Input
                                 label="Drive Link"
-                                disabled={isImplemented}
+                                disabled={!isLeader || isImplemented}
                                 value={repoData?.ideaFiles || ""}
                                 name="ideaFiles"
                                 onChange={handleRepoChange}
@@ -382,7 +384,7 @@ const IdeaDetails = () => {
                                 {validationRepoErrors.ideaFiles}
                             </Typography>
                         )}
-                        {!isImplemented && (
+                        {isLeader && !isImplemented && (
                             <div className="flex w-full justify-between mt-3 py-1.5">
                                 <div className="flex gap-2 justify-center md:justify-end w-full">
                                     <Button

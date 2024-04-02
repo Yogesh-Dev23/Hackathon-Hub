@@ -8,6 +8,7 @@ import {
     Typography,
     CardHeader,
     CardBody,
+    Tooltip,
     // Input,
     // Textarea,
     // IconButton,
@@ -20,43 +21,15 @@ import { fetchTeamDetails, selectTeams } from "../features/team/teamSlice";
 import { TEAMS, USER } from "../constants";
 import { selectUserDetails, selectUserId } from "../features/user/userSlice";
 
-// import {
-//     Menu,
-//     MenuHandler,
-//     MenuList,
-//     MenuItem,
-// } from "@material-tailwind/react";
-
-// import { ChevronDownIcon } from "@heroicons/react/24/outline";
-
-// const TEAM_MEMBERS = [
-//     { name: "Rohith", email: "rohith@gmail.com" },
-//     { name: "Bhavaneshwar", email: "bhuvaneshwar@gmail.com" },
-//     { name: "Ankit", email: "ankitbahnja99@gmail.com" },
-//     { name: "Ankit", email: "ankitbahnja99@gmail.com" },
-// ];
-
 const TeamMembers = () => {
     const dispatch = useDispatch();
     const teamsData = useSelector(selectTeams);
-    // TEAMS
-    // useSelector((state) => state.team.teamdetails.data) || [];
-    // const teamdetails=data.length>0?data[0].teamUserDetailsDTOs:[]
-    // const login = USER
-    // useSelector((state) => state.user.login.data);
     const userData = useSelector(selectUserDetails);
-    // login ? login?.userId : null;
-    const [teamDetails, setTeamDetails] = useState(
-        []
-        // data.length > 0 ? data[0].teamUserDetailsDTOs : []
-    );
-    // useEffect(() => {
-    //     // console.log("hi");
-    //     dispatch(fetchTeamDetails(userId));
-    // }, [dispatch]);
+    const [teamDetails, setTeamDetails] = useState([]);
 
     useEffect(() => {
         if (userData && teamsData.length > 0) {
+            console.log("I was here");
             setTeamDetails(
                 teamsData.find(
                     (team) => team.hackathonId === userData?.assignedHackathon
@@ -88,12 +61,30 @@ const TeamMembers = () => {
                                         />
                                     </ListItemPrefix>
                                     <div>
-                                        <Typography
-                                            variant="h6"
-                                            color="blue-gray"
-                                        >
-                                            {member.name}
-                                        </Typography>
+                                        <div className="flex flex-row items-baseline gap-1">
+                                            <Typography
+                                                variant="h6"
+                                                color="blue-gray"
+                                            >
+                                                {member.name}
+                                            </Typography>
+                                            {member.leader && (
+                                                <Tooltip content="Leader">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 16 16"
+                                                        fill="blue"
+                                                        className="w-3 h-3"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M8 1.75a.75.75 0 0 1 .692.462l1.41 3.393 3.664.293a.75.75 0 0 1 .428 1.317l-2.791 2.39.853 3.575a.75.75 0 0 1-1.12.814L7.998 12.08l-3.135 1.915a.75.75 0 0 1-1.12-.814l.852-3.574-2.79-2.39a.75.75 0 0 1 .427-1.318l3.663-.293 1.41-3.393A.75.75 0 0 1 8 1.75Z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </Tooltip>
+                                            )}
+                                        </div>
                                         <Typography
                                             variant="small"
                                             color="gray"

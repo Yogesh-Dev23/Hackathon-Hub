@@ -31,6 +31,7 @@ import { HACKATHONS, USER } from "./constants";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import { fetchEvaluators } from "./features/evaluator/evaluatorSlice";
 import Cookies from "js-cookie";
+import HackathonRequests from "./pages/HackathonRequests";
 // import Cookies from "js-cookie";
 function App() {
     const dispatch = useDispatch();
@@ -40,9 +41,10 @@ function App() {
     // HACKATHONS;
     // useSelector((state) => state.hackathon.hackathons.data);
     const userData = useSelector(selectUserDetails);
+    
+    // const token = Cookies.get("token");
     useEffect(() => {
         dispatch(fetchHackathons());
-
         //just a work around until we have a proper userdetails fetch api
 
         //
@@ -51,9 +53,9 @@ function App() {
             console.log("fetching evaluators")
             dispatch(fetchEvaluators());
         }
-        if (userData?.role === "participant") {
-            dispatch(fetchTeamDetails(userId));
-        }
+        // if (userData?.role === "participant") {
+        //     dispatch(fetchTeamDetails(userId));
+        // }
         if (userData?.role === "judge") {
             dispatch(
                 fetchJudgeTeamsByHackathonId({
@@ -62,6 +64,7 @@ function App() {
             );
         }
         if (userData?.role === "panelist") {
+            console.log("fetching teams");
             dispatch(
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
@@ -133,10 +136,10 @@ function App() {
                             />
                         }
                     />
-                    {/* <Route
+                    <Route
                             path="trial"
-                            element={<YourComponent arr={arr} />}
-                        /> */}
+                            element={<HackathonRequests />}
+                        />
                 </Routes>
             </BrowserRouter>
         </div>

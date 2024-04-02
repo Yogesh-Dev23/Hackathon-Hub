@@ -79,15 +79,13 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
         setOpenRules(!openRules);
     };
 
-    const handleIdeaAccept = async (teamId) => {
+    const handleIdeaAccept = async () => {
         // console.log(teamId + "idea accepted");
         try {
             await toast.promise(
                 dispatch(
                     acceptTeam({
-                        teamId,
-                        hackathonId: userData.assignedHackathon,
-                        panelistid: userData.userId,
+                        teamId: selectedIdea?.teamId,
                     })
                 ).unwrap(),
                 {
@@ -97,12 +95,9 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                         render({ data }) {
                             return `Error: ${data?.message}`;
                         },
-                        // other options
-                        // icon: "🟢",
                     },
                 }
             );
-            // toast.success("Idea accepted successfully!");
             await dispatch(
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
@@ -111,7 +106,6 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
             ).unwrap();
         } catch (error) {
             console.log(error?.message);
-            // toast.error(`Error: ${error?.message}`);
         }
     };
     const handleIdeaReject = async (teamId) => {
@@ -120,9 +114,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
             await toast.promise(
                 dispatch(
                     rejectTeam({
-                        teamId,
-                        hackathonId: userData.assignedHackathon,
-                        panelistid: userData.userId,
+                        teamId: selectedIdea?.teamId,
                     })
                 ).unwrap(),
                 {
@@ -132,12 +124,9 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                         render({ data }) {
                             return `Error: ${data?.message}`;
                         },
-                        // other options
-                        // icon: "🟢",
                     },
                 }
             );
-            toast.warn("Idea rejected successfully!");
             await dispatch(
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
@@ -146,11 +135,8 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
             ).unwrap();
         } catch (error) {
             console.log(error?.message)
-            // toast.error(`Error: ${error?.message}`);
         }
     };
-
-    console.log(selectedIdea);
 
     return (
         <>
@@ -216,8 +202,11 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                         {selectedIdea?.ideaDomain || ""}
                                     </Typography>
                                 </div>
-                                <div className="md:col-span-1 px-2 flex items-center justify-end">
-                                    <IconButton
+                                <div className="md:col-span-1 px-2 flex flex-col items-center justify-end">
+                                    <Button onClick={handleIdeaAccept} className="bg-green-400 mb-2" size="sm" fullWidth>Accept</Button>
+                                    <Button onClick={handleIdeaReject} className="bg-red-700" size="sm" fullWidth>Reject</Button>
+                                    
+                                    {/* <IconButton
                                         variant="text"
                                         onClick={() => {
                                             handleIdeaAccept(
@@ -264,7 +253,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                                 clipRule="evenodd"
                                             />
                                         </svg>
-                                    </IconButton>
+                                    </IconButton> */}
                                 </div>
                             </div>
 
