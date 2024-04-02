@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Input, Button, Spinner } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+    changePassword,
+    forgotPassword,
     otpVerification,
     selectUserDetails,
     userLogin,
@@ -66,6 +68,7 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
 
     const dispatch = useDispatch();
     const Email = { email: formData.email };
+    // console.log(Email);
     const [emailVerification, setEmailVerification] = useState(false);
     useEffect(() => {
         setShowError(false);
@@ -84,7 +87,7 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
             setValidationErrors(newErrors);
         } else {
             try {
-                await dispatch(userRegistration(Email)).unwrap();
+                await dispatch(forgotPassword(Email)).unwrap();
                 setEmailVerification(true);
                 setShowError(false);
             } catch (error) {
@@ -112,7 +115,7 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
         } else {
             try {
                 e.preventDefault();
-                await dispatch(otpVerification(otpDetails)).unwrap();
+                await dispatch(changePassword(otpDetails)).unwrap();
                 // await dispatch(userLogin(loginData)).unwrap();
                 handler();
                 toast.success("Password Changed Successfully!");
@@ -152,24 +155,28 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
         >
             {/* <span className="close" onClick={toggleModal} style={{ cursor: 'pointer' }}>&times;</span> */}
             <div className="container">
-                <Card className="mx-auto w-full px-16 py-4">
+                <Card className="mx-auto max-h-[95vh] md:max-h-[89vh] w-full px-1 py-2 md:px-16 md:py-4">
                     <CardHeader
                         variant="gradient"
                         color="gray"
                         className="mb-4 grid h-28 place-items-center"
                     >
-                        <Typography variant="h5" color="white">
+                        <Typography
+                            variant="h5"
+                            color="white"
+                            className="text-center"
+                        >
                             Reset Your Password
                         </Typography>
                     </CardHeader>
-                    <CardBody className="max-h-96 overflow-y-auto max">
+                    <CardBody className="pb-2 md:max-h-[89vh] overflow-y-auto">
                         {loading ? (
                             <div className="w-full h-96">
                                 <Spinner className="mx-auto mt-44 h-16 w-16" />
                             </div>
                         ) : (
                             <form
-                                className="account-form w-full mx-auto rounded-xl mt-2 p-2"
+                                className="account-form w-full mx-auto pt-2 md:mt-2 md:p-2 max-h-96 overflow-y-auto "
                                 onSubmit={handleSubmit}
                             >
                                 <div
@@ -215,7 +222,7 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
                                                 type={passwordInputType[0]}
                                                 label="Password"
                                                 placeholder="Password"
-                                                disabled={emailVerification}
+                                                // disabled={emailVerification}
                                                 value={formData.password}
                                                 onChange={handleChange}
                                                 required={!emailVerification}
@@ -275,7 +282,7 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
                                                 type={passwordInputType[1]}
                                                 label="Confirm password"
                                                 placeholder="Label Password"
-                                                disabled={emailVerification}
+                                                // disabled={emailVerification}
                                                 onChange={(e) =>
                                                     setConfirmPassword(
                                                         e.target.value
@@ -352,9 +359,9 @@ const ChangePassword = ({ showModal, handleToggleForgotPassword }) => {
                                     )}
                                 </div>
                                 <br />
-                                <div className="w-fit mx-auto">
+                                <div className="w-fit -mt-3 mx-auto flex justify-center flex-col">
                                     <Button
-                                        className="btn-submit-form cursor-pointer"
+                                        className="btn-submit-form cursor-pointer mx-auto"
                                         type="submit"
                                         size="sm"
                                     >

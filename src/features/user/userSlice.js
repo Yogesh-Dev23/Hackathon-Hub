@@ -67,7 +67,7 @@ export const userLogin = createAsyncThunk(
                 Cookies.set("token", jwt, {
                     expires: 7,
                 });
-                
+
                 Cookies.set("userId", response.data.userId, {
                     expires: 7,
                 });
@@ -86,19 +86,46 @@ export const userLogin = createAsyncThunk(
     }
 );
 
-
 export const reattemptLogin = createAsyncThunk(
     "user/reattemptLogin",
-    async ({userId}, thunkAPI) => {
+    async ({ userId }, thunkAPI) => {
         try {
             const headers = {
-                Authorization:
-                    `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             };
             const response = await axios.get(
                 `http://localhost:8080/User/${userId}`,
-                {headers}
+                { headers }
                 // otpDetails
+            );
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk(
+    "user/forgotPassword",
+    async (Email, thunkAPI) => {
+        try {
+            const response = await axios.post(
+                "http://localhost:8080/User/forgotPassword",
+                Email
+            );
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+export const changePassword = createAsyncThunk(
+    "user/changePassword",
+    async (formData, thunkAPI) => {
+        try {
+            const response = await axios.post(
+                "http://localhost:8080/User/changePassword",
+                formData
             );
             return response.data;
         } catch (error) {
@@ -223,6 +250,30 @@ const userSlice = createSlice({
                 // state.login.loading = false;
                 // state.login.data = null;
                 // state.login.error = action.payload; // Set error payload
+            })
+            .addCase(forgotPassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(changePassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(changePassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(changePassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });
@@ -232,8 +283,9 @@ export const selectUserId = (state) => state.user.data?.userId;
 export const selectErrorUser = (state) => state.user.error;
 export const selectLoadingUser = (state) => state.user.loading;
 
-export const { logout, 
+export const {
+    logout,
     // reattemptLogin,
-     successTeamRegistration } =
-    userSlice.actions;
+    successTeamRegistration,
+} = userSlice.actions;
 export default userSlice.reducer;

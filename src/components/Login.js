@@ -14,6 +14,7 @@ import { selectUserDetails, userLogin } from "../features/user/userSlice";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 // import { showNotification } from "./Notification";
 
 const Login = ({
@@ -91,15 +92,6 @@ const Login = ({
             try {
                 e.preventDefault();
                 await dispatch(userLogin(formData1)).unwrap();
-                
-                // const userData = await dispatch(userLogin(formData1)).unwrap();
-                // if (userData) {
-                //     Cookies.set("userData", JSON.stringify(userData), {
-                //         expires: 7,
-                //     });
-                // }
-
-                // showNotification({type: "success", message: "Login successful!"})
                 setShowError(false);
                 setFormData1({
                     email: "",
@@ -155,24 +147,28 @@ const Login = ({
             <Dialog open={showModal} handler={dialogHandler} size={"xs"}>
                 {/* <ToastContainer /> */}
                 <div className="container">
-                    <Card className="mx-auto w-full px-16 py-4">
+                    <Card className="mx-auto max-h-[95vh] md:max-h-[89vh] w-full px-1 py-2 md:px-16 md:py-4">
                         <CardHeader
                             variant="gradient"
                             color="gray"
                             className="mb-4 grid h-28 place-items-center"
                         >
-                            <Typography variant="h5" color="white">
+                            <Typography
+                                variant="h5"
+                                color="white"
+                                className="text-center"
+                            >
                                 Sign in to your account
                             </Typography>
                         </CardHeader>
-                        <CardBody>
+                        <CardBody className="pb-2 md:max-h-[89vh] overflow-y-auto">
                             {loading ? (
                                 <div className="w-full h-72">
                                     <Spinner className="mx-auto mt-16 h-16 w-16" />
                                 </div>
                             ) : (
                                 <form
-                                    className="account-form w-full mx-auto rounded-xl mt-2 p-2"
+                                    className="account-form w-full mx-auto pt-2 md:mt-2 md:p-2 max-h-96 overflow-y-auto "
                                     onSubmit={handleSubmit}
                                 >
                                     <div
@@ -253,16 +249,12 @@ const Login = ({
                                             flexDirection: "column",
                                         }}
                                     >
-                                        <Typography
-                                            // as="a"
-                                            // href="#signup"
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="ml-1 font-bold cursor-pointer"
+                                        <Link
+                                            className=" place-self-start ml-1 mt-1 mb-2 text-sm font-bold cursor-pointer text-blue-gray"
                                             onClick={handleForgotPasswordClick}
                                         >
                                             Forgot Password?
-                                        </Typography>
+                                        </Link>
                                         {showError && error && (
                                             <Typography className="text-red-500 text-xs w-fit">
                                                 {error?.message ||
@@ -270,9 +262,10 @@ const Login = ({
                                             </Typography>
                                         )}
                                         <Button
-                                            className="btn-submit-form cursor-pointer"
+                                            className="btn-submit-form cursor-pointer text-center"
                                             type="submit"
-                                            // size="sm"
+                                            size="sm"
+                                            fullWidth
                                             // onClick={handleSubmit}
                                             // style={{ cursor: "pointer" }}
                                         >
@@ -287,19 +280,15 @@ const Login = ({
                                 </Button> */}
                                         <Typography
                                             variant="small"
-                                            className="mt-4 flex justify-center"
+                                            className="mt-2 flex justify-center"
                                         >
                                             Don&apos;t have an account?
-                                            <Typography
-                                                // as="a"
-                                                // href="#signup"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="ml-1 font-bold cursor-pointer"
+                                            <Link
+                                                className="ml-1 font-bold cursor-pointer text-blue-gray"
                                                 onClick={handleSignUpClick}
                                             >
                                                 Sign up
-                                            </Typography>
+                                            </Link>
                                         </Typography>
                                     </div>
                                 </form>
