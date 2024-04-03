@@ -12,8 +12,9 @@ import EvaluatorRegistration from "../components/EvaluatorRegistration";
 import EvaluatorAssign from "../components/EvaluatorAssign";
 import ListEvaluator from "../components/ListEvaluator";
 import BaseLayout from "../components/BaseLayout";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchEvaluators } from "../features/evaluator/evaluatorSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
 
 const AdminEvaluators = () => {
     const data = [
@@ -28,6 +29,10 @@ const AdminEvaluators = () => {
             comp: <EvaluatorAssign />,
         },
     ];
+
+    const token = useSelector(selectUserToken);
+    const userData = useSelector(selectUserDetails);
+    const dispatch = useDispatch()
 
     const [evaluatorCollapseOpen, setEvaluatorCollapseOpen] =
         React.useState(false);
@@ -50,6 +55,11 @@ const AdminEvaluators = () => {
         toggleEvaluatorCollapseOpen();
     };
 
+    useEffect(() => {
+        if (userData?.role === "admin") {
+            dispatch(fetchEvaluators({ token }));
+        }
+    }, [userData]);
 
     // const dispatch = useDispatch();
     // useEffect(() => {

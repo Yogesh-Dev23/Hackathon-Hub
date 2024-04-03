@@ -1,4 +1,4 @@
-const USER = null
+const USER = null;
 // {
 //     userId: 9,
 //     name: "Ankit Panelist 5",
@@ -8,7 +8,7 @@ const USER = null
 //     available: false,
 // };
 
-const HACKATHONS = [] 
+const HACKATHONS = [];
 // [
 //     {
 //         hackathonId: 1,
@@ -257,4 +257,22 @@ const TEAMS = [
     },
 ];
 
-export { HACKATHONS, USER, EVALUATORS, TEAMS };
+const REQUESTS = [
+    {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        details: "I recently discovered Creative Tim, and it's been a game-changer for my design projects. As a freelance designer, their resources have helped me elevate my work to the next level. Plus, their pricing is incredibly reasonable. Highly recommend!",
+    },
+    {
+        name: "Alice Smith",
+        email: "alice.smith@example.com",
+        details: "Creative Tim has been an invaluable resource for me as a designer. Whether it's for personal projects or professional endeavors, their products never disappoint. Their team is also incredibly supportive and responsive. Definitely worth every penny!",
+    },
+    {
+        name: "Michael Johnson",
+        email: "michael.johnson@example.com",
+        details: "I've been using Creative Tim for all my design needs, and I couldn't be happier with the results. Their products are top-notch, and the affordability factor is a huge bonus. Kudos to the team for their outstanding work!",
+    }
+];
+
+export { HACKATHONS, USER, EVALUATORS, TEAMS, REQUESTS };

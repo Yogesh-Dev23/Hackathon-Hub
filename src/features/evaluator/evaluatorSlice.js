@@ -1,22 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
 
 const initialState = {
     // evaluators: {
-        data: [],
-        loading: false,
-        error: null,
+    data: [],
+    loading: false,
+    error: null,
     // },
 };
 
 export const fetchEvaluators = createAsyncThunk(
     "evaluator/fetchEvaluators",
-    async (thunkAPI) => {
+    async ({ token }, thunkAPI) => {
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.get(
-                "http://localhost:8080/Admin/Evaluator"
+                "http://localhost:8080/Admin/Evaluator",
+                { headers }
             );
+            console.log(response);
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -26,11 +34,15 @@ export const fetchEvaluators = createAsyncThunk(
 
 export const registerEvaluator = createAsyncThunk(
     "evaluator/registerEvaluator",
-    async (evaluatorData, thunkAPI) => {
+    async ({evaluatorData, token}, thunkAPI) => {
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 "http://localhost:8080/Admin/Evaluator",
-                evaluatorData
+                evaluatorData,
+                { headers }
             );
             // const response2 = await axios.get(
             //     "http://localhost:8080/Admin/Evaluator"
@@ -44,15 +56,22 @@ export const registerEvaluator = createAsyncThunk(
 
 export const assignEvaluator = createAsyncThunk(
     "evaluator/assignEvaluator",
-    async (evaluatorData, thunkAPI) => {
+    async ({evaluatorData, token}, thunkAPI) => {
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 "http://localhost:8080/Admin/assign",
-                evaluatorData
+                evaluatorData,
+                { headers }
             );
             // const response2 = await axios.get(
             //     "http://localhost:8080/Admin/Evaluator"
             // );
+            if (!response.data) {
+                return [];
+            }
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -91,7 +110,7 @@ const evaluatorSlice = createSlice({
             })
             .addCase(registerEvaluator.fulfilled, (state, action) => {
                 state.loading = false;
-                // state.data = action.payload; // Refetch and set evalautor list   
+                // state.data = action.payload; // Refetch and set evalautor list
                 state.error = null;
             })
             .addCase(registerEvaluator.rejected, (state, action) => {
@@ -105,7 +124,7 @@ const evaluatorSlice = createSlice({
             })
             .addCase(assignEvaluator.fulfilled, (state, action) => {
                 state.loading = false;
-                // state.data = action.payload; // Refetch and set evalautor list   
+                // state.data = action.payload; // Refetch and set evalautor list
                 state.error = null;
             })
             .addCase(assignEvaluator.rejected, (state, action) => {
@@ -116,12 +135,10 @@ const evaluatorSlice = createSlice({
     },
 });
 
-
 export const selectEvaluators = (state) => state.evaluator.data;
 
 export const selectErrorEvaluator = (state) => state.evaluator.error;
 export const selectLoadingEvaluator = (state) => state.evaluator.loading;
-
 
 export const { clearEvaluators } = evaluatorSlice.actions;
 

@@ -1,57 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
 
 const initialState = {
     data: [],
     loading: false,
     error: null,
-    // registration: {
-    //     data: null,
-    //     loading: false,
-    //     error: null,
-    // },
-    // idea: {
-    //     data: null,
-    //     loading: false,
-    //     error: null,
-    // },
-    // repo: {
-    //     data: null,
-    //     loading: false,
-    //     error: null,
-    // },
-    // teamdetails: {
-    //     data: null,
-    //     loading: false,
-    //     error: null,
-    // },
-    // judgeteams: {
-    //     data: null,
-    //     loading: false,
-    //     error: null,
-    // },
-    // panelistteams: {
-    //     data: null,
-    //     loading: false,
-    //     error: null,
-    // },
 };
 export const teamRegistration = createAsyncThunk(
     "team/teamRegistration",
-    async ({ hackathonId, userId, team }, thunkAPI) => {
+    async ({ hackathonId, userId, team, token }, thunkAPI) => {
         try {
-            // console.log({ hackathonId, userId, team });
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 `http://localhost:8080/Team/${hackathonId}/${userId}`,
-                team
+                team,
+                { headers }
             );
-            // const response2 = await axios.get(
-            //     `http://localhost:8080/User/Teams/${userId}`
-            // );
-            // console.log(response);
+            console.log(team);
             return response.data;
-            // return { a: response, b: response2 };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -59,19 +31,17 @@ export const teamRegistration = createAsyncThunk(
 );
 export const ideaSubmission = createAsyncThunk(
     "team/ideaSubmission",
-    async ({ hackathonId, userId, ideaData }, thunkAPI) => {
+    async ({ hackathonId, userId, ideaData, token }, thunkAPI) => {
         try {
-            // console.log({ hackathonId, userId, ideaData });
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 `http://localhost:8080/Team/idea/${hackathonId}/${userId}`,
-                ideaData
+                ideaData,
+                { headers }
             );
-            // const response2 = await axios.get(
-            //     `http://localhost:8080/User/Teams/${userId}`
-            // );
-            // console.log(response);
             return response.data;
-            // return { a: response, b: response2 };
         } catch (error) {
             // console.log(error);
             return thunkAPI.rejectWithValue(error.response.data);
@@ -81,18 +51,18 @@ export const ideaSubmission = createAsyncThunk(
 
 export const repoSubmission = createAsyncThunk(
     "team/repoSubmission",
-    async ({ hackathonId, userId, repoData }, thunkAPI) => {
+    async ({ hackathonId, userId, repoData, token }, thunkAPI) => {
         try {
             // console.log({ hackathonId, userId, repoData });
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 `http://localhost:8080/Team/ideaFiles/${hackathonId}/${userId}`,
-                repoData
+                repoData,
+                { headers }
             );
-            // const response2 = await axios.get(
-            //     `http://localhost:8080/User/Teams/${userId}`
-            // );
-            // console.log(response);
-            // return { a: response, b: response2 };
+            console.log(response)
             return response.data;
         } catch (error) {
             // console.log(error);
@@ -103,17 +73,21 @@ export const repoSubmission = createAsyncThunk(
 
 export const fetchTeamDetails = createAsyncThunk(
     "hackathon/fetchTeamDetails",
-    async (userId, thunkAPI) => {
+    async ({userId, token}, thunkAPI) => {
         try {
             // console.log(userId);
             // if (userId) {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.get(
-                `http://localhost:8080/User/Teams/${userId}`
+                `http://localhost:8080/User/Teams/${userId}`,
+                { headers }
             );
-            // console.log(response);
+            if (!response.data) {
+                return [];
+            }
             return response.data;
-            // }
-            // return [];
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -122,12 +96,20 @@ export const fetchTeamDetails = createAsyncThunk(
 
 export const fetchJudgeTeamsByHackathonId = createAsyncThunk(
     "team/fetchJudgeTeamsByHackathonId",
-    async ({ hackathonId }, thunkAPI) => {
+    async ({ hackathonId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.get(
-                `http://localhost:8080/Judge/selectedTeams/${hackathonId}`
+                `http://localhost:8080/Judge/selectedTeams/${hackathonId}`,
+                { headers }
             );
+            
+            if (!response.data) {
+                return [];
+            }
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -137,17 +119,22 @@ export const fetchJudgeTeamsByHackathonId = createAsyncThunk(
 
 export const fetchPanelistTeamsByHackathonId = createAsyncThunk(
     "team/fetchPanelistTeamsByHackathonId",
-    async ({ hackathonId, panelistid }, thunkAPI) => {
+    async ({ hackathonId, panelistid, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
-            // if (hackathonId !== -1 && panelistid) {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            console.log(token)
             const response = await axios.get(
-                `http://localhost:8080/panelist/${hackathonId}/${panelistid}`
+                `http://localhost:8080/panelist/${hackathonId}/${panelistid}`,
+                { headers }
             );
-            // console.log(response);
+            
+            if (!response.data) {
+                return [];
+            }
             return response.data;
-            // }
-            // return [];
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -156,16 +143,21 @@ export const fetchPanelistTeamsByHackathonId = createAsyncThunk(
 
 export const rejectTeam = createAsyncThunk(
     "team/rejectTeam",
-    async ({ teamId, hackathonId, panelistid }, thunkAPI) => {
+    async ({ teamId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
+            console.log(teamId)
             // if (hackathonId !== -1 && panelistid && teamId) {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
-                `http://localhost:8080/Team/rejected/${teamId}`
+                `http://localhost:8080/Team/rejected/${teamId}`, {},
+                { headers }
             );
-            const response2 = await axios.get(
-                `http://localhost:8080/panelist/${hackathonId}/${panelistid}`
-            );
+            // const response2 = await axios.get(
+            //     `http://localhost:8080/panelist/${hackathonId}/${panelistid}`
+            // );
             return response.data;
             // }
             // return [];
@@ -177,16 +169,20 @@ export const rejectTeam = createAsyncThunk(
 
 export const acceptTeam = createAsyncThunk(
     "team/acceptTeam",
-    async ({ teamId, hackathonId, panelistid }, thunkAPI) => {
+    async ({ teamId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
             // if (hackathonId !== -1 && panelistid && teamId) {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.put(
-                `http://localhost:8080/Team/selected/${teamId}`
+                `http://localhost:8080/Team/selected/${teamId}`, {},
+                { headers }
             );
-            const response2 = await axios.get(
-                `http://localhost:8080/panelist/${hackathonId}/${panelistid}`
-            );
+            // const response2 = await axios.get(
+            //     `http://localhost:8080/panelist/${hackathonId}/${panelistid}`
+            // );
             return response.data;
             // }
             // return [];
@@ -198,12 +194,16 @@ export const acceptTeam = createAsyncThunk(
 
 export const rateTeam = createAsyncThunk(
     "team/rateTeam",
-    async ({ teamId, rating }, thunkAPI) => {
+    async ({ teamId, rating, feedback, userId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 `http://localhost:8080/Judge/review/${teamId}`,
-                { rating }
+                { rating, feedback, userId },
+                { headers }
             );
             return response.data;
         } catch (error) {
@@ -370,7 +370,6 @@ export const selectTeamByHackathonId = (state, hackathonId) =>
     null;
 export const selectErrorTeam = (state) => state.team.error;
 export const selectLoadingTeam = (state) => state.team.loading;
-
 
 export const { clearTeams } = teamSlice.actions;
 

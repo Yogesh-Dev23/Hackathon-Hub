@@ -1,10 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
 
 const initialState = {
     // hackathons:{
     data: [],
+    requests: [],
     loading: false,
     error: null,
     // }
@@ -14,6 +18,9 @@ export const fetchHackathons = createAsyncThunk(
     async (thunkAPI) => {
         try {
             const response = await axios.get("http://localhost:8080/Hackathon");
+            if (!response.data) {
+                return [];
+            }
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -22,11 +29,38 @@ export const fetchHackathons = createAsyncThunk(
 );
 export const hackathonCreation = createAsyncThunk(
     "hackathon/hackathonCreation",
-    async (hackathonData, thunkAPI) => {
+    async ({ formData, token }, thunkAPI) => {
         try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
             const response = await axios.post(
                 "http://localhost:8080/Admin/hackathon",
-                hackathonData
+                formData,
+                { headers }
+            );
+            // console.log(response);
+            // const response2 = await axios.get(
+            //     "http://localhost:8080/Hackathon"
+            // );
+
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const hackathonEnd = createAsyncThunk(
+    "hackathon/hackathonEnd",
+    async ({ hackathonId, token }, thunkAPI) => {
+        try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await axios.put(
+                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`,
+                { headers }
             );
             // console.log(response);
             // const response2 = await axios.get(
@@ -39,17 +73,34 @@ export const hackathonCreation = createAsyncThunk(
     }
 );
 
-export const hackathonEnd = createAsyncThunk(
-    "hackathon/hackathonEnd",
-    async (hackathonId, thunkAPI) => {
+export const newRequest = createAsyncThunk(
+    "hackathon/newRequest",
+    async (formData, thunkAPI) => {
         try {
-            const response = await axios.put(
-                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`
+            const response = await axios.post(
+                "http://localhost:8080/ContactDetails/Contact",
+                formData
             );
-            // console.log(response);
-            // const response2 = await axios.get(
-            //     "http://localhost:8080/Hackathon"
-            // );
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+export const fetchRequests = createAsyncThunk(
+    "hackathon/fetchRequests",
+    async ({ token }, thunkAPI) => {
+        try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await axios.get(
+                "http://localhost:8080/Admin/contactDetails",
+                { headers }
+            );
+            if (!response.data) {
+                return [];
+            }
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -104,6 +155,34 @@ const hackathonSlice = createSlice({
                 state.loading = false;
                 // state.data = null;
                 state.error = action.payload; // Set error payload
+            })
+            .addCase(newRequest.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(newRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                // state.data = action.payload; // Extract data from the response
+                state.error = null;
+            })
+            .addCase(newRequest.rejected, (state, action) => {
+                state.loading = false;
+                // state.data = null;
+                state.error = action.payload; // Set error payload
+            })
+            .addCase(fetchRequests.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchRequests.fulfilled, (state, action) => {
+                state.loading = false;
+                state.requests = action.payload; // Extract data from the response
+                state.error = null;
+            })
+            .addCase(fetchRequests.rejected, (state, action) => {
+                state.loading = false;
+                state.requests = [];
+                state.error = action.payload; // Set error payload
             });
     },
 });
@@ -113,6 +192,8 @@ export const selectHackathonById = (state, hackathonId) =>
     state.hackathon.data?.find(
         (hackathon) => hackathon.hackathonId === Number(hackathonId)
     ) || null;
+
+export const selectRequests = (state) => state.hackathon.requests;
 export const selectErrorHackathon = (state) => state.hackathon.error;
 export const selectLoadingHackathon = (state) => state.hackathon.loading;
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
     Card,
     Input,
@@ -19,6 +19,7 @@ import {
 } from "../features/hackathon/hackathonSlice";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { selectUserToken } from "../features/user/userSlice";
 
 const CreateHackathon = () => {
     const themes = [
@@ -28,9 +29,6 @@ const CreateHackathon = () => {
         { name: "Product Engineering" },
     ];
     const dispatch = useDispatch();
-    // useEffect(()=>{
-    //     dispatch(fetchHackathons())
-    // },[dispatch])
     const [formData, setFormData] = useState({
         name: "",
         theme: "",
@@ -50,156 +48,7 @@ const CreateHackathon = () => {
         setFormData((prevstate) => ({ ...prevstate, [name]: value }));
     };
 
-//     const [errors, setErrors] = useState({});
-//     const handleSubmit = () => {
-//         const currentDate = new Date()
-//         const startDate = new Date(formData.startDate);
-//         const ideaSubmissionDeadLine=new Date(formData.ideaSubmissionDeadLine)
-//         const shortListDeadLine=new Date(formData.shortListDeadLine)
-//         const implementationDeadLine=new Date(formData.implementationDeadLine)
-//         const reviewStartTime=new Date(formData.reviewStartTime)
-//         const reviewEndTime=new Date(formData.reviewEndTime)
-//         const newErrors = {};
-//         if(!formData.name)
-//         {
-//             newErrors.name="Hackathon Name is Required!"
-//         }
-//         if(formData.name && formData.name.length>255)
-//         {
-//             newErrors.name="Hackathon Name Should Not Contain More Than 255 Characters"
-//         }
-//         if(!formData.theme)
-//         {
-//             newErrors.theme="Theme Is Required"
-//         }
-//         if(!formData.startDate)
-//         {
-//             newErrors.startDate="Start Date is Required!"
-//         }
-//         if(formData.startDate && startDate<=currentDate)
-//         {
-//             newErrors.startDate="Start Date Must Be In Future"
-//         }
-//         if(!formData.ideaSubmissionDeadLine)
-//         {
-//             newErrors.ideaSubmissionDeadLine="Idea Submission Dead Line is Required!"
-//         }
-//         if(formData.ideaSubmissionDeadLine && ideaSubmissionDeadLine<=startDate)
-//         {
-//             newErrors.ideaSubmissionDeadLine="Idea Submission Dead Line Should Be After The Start Date"
-//         }
-//         if(formData.ideaSubmissionDeadLine && ideaSubmissionDeadLine<=currentDate)
-//         {
-//             newErrors.ideaSubmissionDeadLine="Idea Submission Dead Line Must Be In Future"
-//         }
-//         if(!formData.shortListDeadLine)
-//         {
-//             newErrors.shortListDeadLine="short List Dead Line is Required!"
-//         }
-//         if(formData.shortListDeadLine && shortListDeadLine<=ideaSubmissionDeadLine)
-//         {
-//             newErrors.shortListDeadLine="Short List Dead Line Should Be After The Idea Submission Dead Line"
-//         }
-//         if(formData.shortListDeadLine && shortListDeadLine<=currentDate)
-//         {
-//             newErrors.shortListDeadLine="Short List Dead Line Must Be In Future"
-//         }
-//         if(!formData.implementationDeadLine)
-//         {
-//             newErrors.implementationDeadLine="Implementation Dead Line is Required!"
-//         }
-//         if(formData.implementationDeadLine && implementationDeadLine<=shortListDeadLine)
-//         {
-//             newErrors.implementationDeadLine="Implementation Dead Line Should be After The ShortList Dead Line"
-//         }
-//         if(formData.implementationDeadLine && implementationDeadLine<currentDate)
-//         {
-//             newErrors.implementationDeadLine="Implementation Dead Line Must Be In Future"
-//         }
-//         if(!formData.reviewStartTime)
-//         {
-//             newErrors.reviewStartTime="Review Start Time is Required!"
-//         }
-//         if(formData.reviewStartTime && reviewStartTime<=implementationDeadLine)
-//         {
-//             newErrors.reviewStartTime="Review Start Time Should Be After Implementation Dead Line"
-//         }
-//         if(formData.reviewStartTime && reviewStartTime<=currentDate)
-//         {
-//             newErrors.reviewStartTime="Review Start Time Must Be In Future"
-//         }
-//         if(!formData.reviewEndTime)
-//         {
-//             newErrors.reviewEndTime="Review End Time is Required!"
-//         }
-//         if(formData.reviewEndTime && reviewEndTime <=reviewStartTime)
-//         {
-//             newErrors.reviewEndTime="Review End Time Should Be After Review Start Time"
-//         }
-//         if(formData.reviewEndTime && reviewEndTime <=currentDate)
-//         {
-//             newErrors.reviewEndTime="Review End Time Must Be In Future"
-//         }
-//         if(!formData.description)
-//         {
-//             newErrors.description="Description is Required!"
-//         }
-//         if(formData.description && formData.description.length>3000)
-//         {
-//             newErrors.description="Description Should Not Contain More Than 3000 characters"
-//         }
-//         if(!formData.guidelines)
-//         {
-//             newErrors.guidelines="GuideLines Are Required!"
-//         }
-//         if(formData.guidelines && formData.guidelines.length>3000)
-//         {
-//             newErrors.guidelines="Guidelines Should Not Contain More Than 3000 characters"
-//         }
-//         if(!formData.prizes)
-//         {
-//             newErrors.prizes="Prizes Are Required!"
-//         }
-//         if(formData.prizes && formData.prizes.length>3000)
-//         {
-//             newErrors.prizes="Prizes Should Not Contain More Than 3000 characters"
-//         }
-//         if(!formData.judgingCriteria)
-//         {
-//             newErrors.judgingCriteria="Judging Criteria Is Required"
-//         }
-//         if(formData.judgingCriteria && formData.judgingCriteria.length>3000)
-//         {
-//             newErrors.judgingCriteria="Judging Criteria Should Not Contain More Than 3000 characters"
-//         }
-//         if(Object.keys(newErrors).length > 0)
-//         {
-//             setErrors(newErrors);
-//         }
-//         else{
-//         dispatch(hackathonCreation(formData));
-//         setFormData({
-//             name:"",
-//             theme:"",
-//             startDate:"",
-//             ideaSubmissionDeadLine:"",
-//             shortListDeadLine:"",
-//             implementationDeadLine:"",
-//             reviewStartTime:"",
-//             reviewEndTime:"",
-//             description:"",
-//             guidelines:"",
-//             prizes:"",
-//             judgingCriteria:"",})
-//             toast.success("Hackathon Is Created!", {
-//                 position: "top-center",
-//                 transition:Slide})
-//     }
-   
-//     setErrors(newErrors);
-// }
-
-
+    const token = useSelector(selectUserToken)
 
     const [validationErrors, setValidationErrros] = useState({});
     const handleSubmit = async () => {
@@ -327,7 +176,7 @@ const CreateHackathon = () => {
             setValidationErrros(newErrors);
         } else {
             try {
-                await dispatch(hackathonCreation(formData)).unwrap();
+                await dispatch(hackathonCreation({formData, token})).unwrap();
                 setFormData({
                     name: "",
                     theme: "",

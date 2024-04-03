@@ -10,7 +10,7 @@ import {
     MenuItem,
 } from "@material-tailwind/react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
@@ -22,6 +22,7 @@ import {
 } from "../features/evaluator/evaluatorSlice";
 import { fetchHackathons } from "../features/hackathon/hackathonSlice";
 import { toast } from "react-toastify";
+import { selectUserToken } from "../features/user/userSlice";
 
 const EvaluatorRegistration = () => {
     const roles = [
@@ -30,6 +31,7 @@ const EvaluatorRegistration = () => {
     ];
     const [selectedRoleIndex, setSelectedRoleIndex] = React.useState(0);
     const selectedRole = roles[selectedRoleIndex];
+    const token = useSelector(selectUserToken);
 
     const dispatch = useDispatch();
     // const [selectedTheme, setSelectedTheme] = useState({ name: "" });
@@ -70,7 +72,7 @@ const EvaluatorRegistration = () => {
             try {
                 // await dispatch(registerEvaluator(registerData)).unwrap();
                 await toast.promise(
-                    dispatch(registerEvaluator(registerData)).unwrap(),
+                    dispatch(registerEvaluator({evaluatorData: registerData, token})).unwrap(),
                     {
                         pending: "Registering...",
                         success: `${registerData.name} registered successfully!`,
@@ -89,7 +91,7 @@ const EvaluatorRegistration = () => {
                     // }
                 );
                 setRegisterData({ role: roles[selectedRoleIndex].value });
-                await dispatch(fetchEvaluators()).unwrap();
+                await dispatch(fetchEvaluators({token})).unwrap();
             } catch (error) {
                 console.log(error);
                 // toast.error(`Error: ${error?.message}`);

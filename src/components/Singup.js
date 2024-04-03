@@ -3,6 +3,8 @@ import { Input, Button, Spinner } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     otpVerification,
+    selectErrorUser,
+    selectLoadingUser,
     selectUserDetails,
     userLogin,
     userRegistration,
@@ -17,6 +19,7 @@ import {
 import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 const Signup = ({
     showModal,
@@ -72,9 +75,9 @@ const Signup = ({
     // const error = useSelector((state) => state.user.register.error);
     // const loading = useSelector((state) => state.user.register.loading);
 
-    const error = useSelector((state) => state.user.error);
+    const error = useSelector(selectErrorUser);
     const [showError, setShowError] = useState(false);
-    const loading = useSelector((state) => state.user.loading);
+    const loading = useSelector(selectLoadingUser);
 
     const dispatch = useDispatch();
     const loginData = { email: formData.email, password: formData.password };
@@ -82,9 +85,9 @@ const Signup = ({
 
     const navigate = useNavigate();
     const handleSignInClick = () => {
-        handleToggleSignUp(false)
-        handleToggleSignIn(true)
-    }
+        handleToggleSignUp(false);
+        handleToggleSignIn(true);
+    };
 
     useEffect(() => {
         setShowError(false);
@@ -177,24 +180,28 @@ const Signup = ({
         >
             {/* <span className="close" onClick={toggleModal} style={{ cursor: 'pointer' }}>&times;</span> */}
             <div className="container">
-                <Card className="mx-auto w-full px-16 py-4">
+                <Card className="mx-auto max-h-[95vh] md:max-h-[89vh] w-full px-1 py-2 md:px-16 md:py-4">
                     <CardHeader
                         variant="gradient"
                         color="gray"
                         className="mb-4 grid h-28 place-items-center"
                     >
-                        <Typography variant="h5" color="white">
-                            Sign in to your account
+                        <Typography
+                            variant="h5"
+                            color="white"
+                            className="text-center"
+                        >
+                            Register Your Account
                         </Typography>
                     </CardHeader>
-                    <CardBody className="max-h-96 overflow-y-auto max">
+                    <CardBody className="pb-2 md:max-h-[89vh] overflow-y-auto">
                         {loading ? (
                             <div className="w-full h-96">
                                 <Spinner className="mx-auto mt-44 h-16 w-16" />
                             </div>
                         ) : (
                             <form
-                                className="account-form w-full mx-auto rounded-xl mt-2 p-2"
+                                className="account-form w-full mx-auto pt-2 md:mt-2 md:p-2 max-h-96 overflow-y-auto "
                                 onSubmit={handleSubmit}
                             >
                                 <div
@@ -380,9 +387,9 @@ const Signup = ({
                                     )}
                                 </div>
                                 <br />
-                                <div className="w-fit mx-auto">
+                                <div className="w-fit -mt-3 mx-auto flex justify-center flex-col">
                                     <Button
-                                        className="btn-submit-form cursor-pointer"
+                                        className="btn-submit-form cursor-pointer mx-auto"
                                         type="submit"
                                         size="sm"
                                         // onClick={() => {
@@ -394,21 +401,17 @@ const Signup = ({
                                         Sign up
                                     </Button>
                                     <Typography
-                                            variant="small"
-                                            className="mt-4 flex justify-center"
+                                        variant="small"
+                                        className="mt-2 flex justify-center"
+                                    >
+                                        Already have an account?
+                                        <Link
+                                            className="ml-1 text-sm font-bold cursor-pointer text-blue-gray"
+                                            onClick={handleSignInClick}
                                         >
-                                            Already have an account?
-                                            <Typography
-                                                // as="a"
-                                                // href="#signup"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="ml-1 font-bold cursor-pointer"
-                                                onClick={handleSignInClick}
-                                            >
-                                                Login
-                                            </Typography>
-                                        </Typography>
+                                            Login
+                                        </Link>
+                                    </Typography>
                                 </div>
                             </form>
                         )}

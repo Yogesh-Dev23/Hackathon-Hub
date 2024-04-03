@@ -30,7 +30,8 @@ import {
     fetchHackathons,
     selectHackathons,
 } from "../features/hackathon/hackathonSlice";
-import { selectUserDetails } from "../features/user/userSlice";
+import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
+import Cookies from "js-cookie";
 
 const themes = [
     { name: "Life Sciences", value: "lifesciences" },
@@ -44,38 +45,19 @@ const PanelistShortlist = () => {
 
     const teamsData = useSelector(selectTeams);
     const [ideas, setIdeas] = useState([]);
-    // useSelector((state) => state.team.judgeteams.data?.data) || [];
 
     useEffect(() => {
-        setIdeas(teamsData);
+        setIdeas(teamsData?.filter((team) => team.status !== "registered"));
     }, [teamsData]);
 
-    // const IDEAS = TEAMS;
-    // useSelector((state) => state.team.panelistteams.data?.data) || [];
-
-    // const user = USER;
     const userData = useSelector(selectUserDetails);
-    // useSelector((state) => state.user.login?.data?.data);
-    // console.log(USER);
-    // useEffect(() => {
-    //     dispatch(fetchHackathons());
-    // }, [dispatch]);
+    const token = useSelector(selectUserToken);
 
     const hackathons = useSelector(selectHackathons);
-    // HACKATHONS;
-    // useSelector((state) => state.hackathon.hackathons.data) || [];
-    // console.log(hackathons);
-
-    // const [filteredHackathons, setFilteredHackathons] =
-    //     React.useState(hackathons);
 
     const [selectedHackathonId, setSelectedHackathonId] = React.useState(null);
 
-    const [selectedIdeaId, setSelectedIdeaId] = React.useState(
-        null
-        // ideas[0]?.teamId
-    );
-    // console.log(ideas[0]);
+    const [selectedIdeaId, setSelectedIdeaId] = React.useState(null);
 
     useEffect(() => {
         if (userData) {
@@ -109,15 +91,16 @@ const PanelistShortlist = () => {
     };
 
     useEffect(() => {
-        if (userData) {
+        if (userData?.role === "panelist") {
             dispatch(
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData.assignedHackathon,
                     panelistid: userData.userId,
+                    token,
                 })
             );
         }
-    }, [userData]);
+    }, []);
 
     return (
         <BaseLayout>
@@ -238,7 +221,9 @@ const PanelistShortlist = () => {
                                                           <>
                                                               {idea.status ===
                                                               "submitted" ? null : idea.status ===
-                                                                "selected" ? (
+                                                                    "selected" ||
+                                                                idea.status ===
+                                                                    "implemented" ? (
                                                                   <svg
                                                                       xmlns="http://www.w3.org/2000/svg"
                                                                       viewBox="0 0 24 24"

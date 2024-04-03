@@ -1,4 +1,3 @@
-// SignInForm.jsx
 import React, { useEffect, useState } from "react";
 import {
     Input,
@@ -11,10 +10,17 @@ import {
     Card,
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserDetails, userLogin } from "../features/user/userSlice";
+import {
+    selectErrorUser,
+    selectLoadingUser,
+    selectUserDetails,
+    updateToken,
+    userLogin,
+} from "../features/user/userSlice";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 // import { showNotification } from "./Notification";
 
 const Login = ({
@@ -23,6 +29,7 @@ const Login = ({
     setShowSignInModal,
     handleToggleSignUp,
     handleToggleSignIn,
+    handleToggleForgotPassword,
 }) => {
     const [formData1, setFormData1] = useState({
         email: "",
@@ -32,25 +39,22 @@ const Login = ({
         const { name, value } = e.target;
         setFormData1((prevstate) => ({ ...prevstate, [name]: value }));
     };
+    const handleForgotPasswordClick = () => {
+        handleToggleSignIn(false);
+        handleToggleForgotPassword(true);
+    };
     const handleSignUpClick = () => {
         handleToggleSignIn(false);
         handleToggleSignUp(true);
-        // toggleModal(); // Close the SignInModal
-        // toggleModals(); // Open the SignUpModal
     };
     const handleGoogleSignIn = () => {
         // Call the function to initiate Google Sign-In process
         // For example, you can use the Google Sign-In API
     };
     const dispatch = useDispatch();
-    // const data = null;
-    // useSelector((state) => state.user.login.data);
-    // const status = data ? data.status : null;
-    // const error = useSelector((state) => state.user.login.error);
-    // const loading = useSelector((state) => state.user.login.loading);
     const [showError, setShowError] = useState(false);
-    const error = useSelector((state) => state.user.error);
-    const loading = useSelector((state) => state.user.loading);
+    const error = useSelector(selectErrorUser);
+    const loading = useSelector(selectLoadingUser);
     const [passwordInputType, setPasswordInputType] = useState("password");
 
     const handleTogglePassword = (type = "none") => {
@@ -71,51 +75,61 @@ const Login = ({
     };
 
     // const userData = useSelector(selectUserDetails);
-
+    const [validationErrors, setValidationErrors] = useState({});
     const handleSubmit = async (e) => {
-        try {
-            e.preventDefault();
-            const userData = await dispatch(userLogin(formData1)).unwrap();
-            if (userData) {
-                Cookies.set("userData", JSON.stringify(userData), {
-                    expires: 7,
-                });
-            }
-
-            // showNotification({type: "success", message: "Login successful!"})
-            setShowError(false);
-            setFormData1({
-                email: "",
-                password: "",
-            });
-            handleToggleSignIn(false);
-            navigate("/hackathons");
-            toast.success("Login Successful!");
-        } catch (error) {
-            setShowError(true);
-            // toast.error("Login Failed!");
+        const newErrors = {};
+        if (!formData1.email) {
+            newErrors.email = "Email is Required!";
         }
+        if (formData1.email && !validateEmail(formData1.email)) {
+            newErrors.email = "Email is Invalid!";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setValidationErrors(newErrors);
+        } else {
+            try {
+                e.preventDefault();
+                await dispatch(userLogin(formData1)).unwrap();
+                const token = Cookies.get("token");
+                if (token) {
+                    dispatch(updateToken(token));
+                }
+                setShowError(false);
+                setFormData1({
+                    email: "",
+                    password: "",
+                });
+                setValidationErrors(newErrors);
+                handleToggleSignIn(false);
+                navigate("/hackathons");
+                toast.success("Login Successful!");
+            } catch (error) {
+                setShowError(true);
+                // toast.error("Login Failed!");
+            }
+        }
+        setValidationErrors(newErrors);
     };
 
     useEffect(() => {
         setShowError(false);
     }, [showModal]);
 
+    const validateEmail = (email) => {
+        // Regex pattern for email validation
+        const pattern =
+            /^[_a-z0-9-]+(\.[_a-z0-9-]+)*(\+[a-z0-9-]+)?@[a-z0-9-]+(\.[a-z0-9-]+)*$/i;
+        return pattern.test(email);
+    };
+
     const navigate = useNavigate();
-    // useEffect(() => {
-    //     if (status === 200) {
-    //         setShowSignInModal(false);
-    //         // navigate('/')
-    //         // toast.success("SignIn Success!", {
-    //         //     position: "top-center",
-    //         //     transition:Slide
-    //         // });
-    //     }
-    // }, [status]);
+
     const dialogHandler = () => {
         // toggleModal();
         handleToggleSignIn(false);
         handleTogglePassword("password");
+        setValidationErrors({});
         setFormData1({
             email: "",
             password: "",
@@ -127,24 +141,28 @@ const Login = ({
             <Dialog open={showModal} handler={dialogHandler} size={"xs"}>
                 {/* <ToastContainer /> */}
                 <div className="container">
-                    <Card className="mx-auto w-full px-16 py-4">
+                    <Card className="mx-auto max-h-[95vh] md:max-h-[89vh] w-full px-1 py-2 md:px-16 md:py-4">
                         <CardHeader
                             variant="gradient"
                             color="gray"
                             className="mb-4 grid h-28 place-items-center"
                         >
-                            <Typography variant="h5" color="white">
+                            <Typography
+                                variant="h5"
+                                color="white"
+                                className="text-center"
+                            >
                                 Sign in to your account
                             </Typography>
                         </CardHeader>
-                        <CardBody>
+                        <CardBody className="pb-2 md:max-h-[89vh] overflow-y-auto">
                             {loading ? (
                                 <div className="w-full h-72">
                                     <Spinner className="mx-auto mt-16 h-16 w-16" />
                                 </div>
                             ) : (
                                 <form
-                                    className="account-form w-full mx-auto rounded-xl mt-2 p-2"
+                                    className="account-form w-full mx-auto pt-2 md:mt-2 md:p-2 max-h-96 overflow-y-auto "
                                     onSubmit={handleSubmit}
                                 >
                                     <div
@@ -162,6 +180,11 @@ const Login = ({
                                             placeholder="abc@gmail.com"
                                             required
                                         />
+                                        {validationErrors.email && (
+                                            <Typography className="text-red-500 text-xs w-fit">
+                                                {validationErrors.email}
+                                            </Typography>
+                                        )}
                                         <Input
                                             id="password"
                                             name="password"
@@ -220,6 +243,12 @@ const Login = ({
                                             flexDirection: "column",
                                         }}
                                     >
+                                        <Link
+                                            className=" place-self-start ml-1 mt-1 mb-2 text-sm font-bold cursor-pointer text-blue-gray"
+                                            onClick={handleForgotPasswordClick}
+                                        >
+                                            Forgot Password?
+                                        </Link>
                                         {showError && error && (
                                             <Typography className="text-red-500 text-xs w-fit">
                                                 {error?.message ||
@@ -227,9 +256,10 @@ const Login = ({
                                             </Typography>
                                         )}
                                         <Button
-                                            className="btn-submit-form cursor-pointer"
+                                            className="btn-submit-form cursor-pointer text-center"
                                             type="submit"
-                                            // size="sm"
+                                            size="sm"
+                                            fullWidth
                                             // onClick={handleSubmit}
                                             // style={{ cursor: "pointer" }}
                                         >
@@ -244,19 +274,15 @@ const Login = ({
                                 </Button> */}
                                         <Typography
                                             variant="small"
-                                            className="mt-4 flex justify-center"
+                                            className="mt-2 flex justify-center"
                                         >
                                             Don&apos;t have an account?
-                                            <Typography
-                                                // as="a"
-                                                // href="#signup"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="ml-1 font-bold cursor-pointer"
+                                            <Link
+                                                className="ml-1 font-bold cursor-pointer text-blue-gray"
                                                 onClick={handleSignUpClick}
                                             >
                                                 Sign up
-                                            </Typography>
+                                            </Link>
                                         </Typography>
                                     </div>
                                 </form>
