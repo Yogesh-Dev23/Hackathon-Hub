@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BaseLayout from "../components/BaseLayout";
 import {
     Card,
@@ -10,8 +10,19 @@ import {
 } from "@material-tailwind/react";
 import { REQUESTS } from "../constants";
 import HackathonRequestCard from "../components/HackathonRequestCard";
+import { useSelector } from "react-redux";
+import { selectRequests } from "../features/hackathon/hackathonSlice";
 
 const HackathonRequests = () => {
+    const requestsData = useSelector(selectRequests);
+    const [requests, setRequests] = useState([]);
+
+    useEffect(() => {
+        console.log(requestsData);
+        if (requestsData.length > 0) {
+            setRequests(requestsData);
+        }
+    }, [requestsData]);
     return (
         <BaseLayout>
             <div className="container py-4 mx-auto  px-1 flexjustify-center">
@@ -22,7 +33,7 @@ const HackathonRequests = () => {
                     Hackathon Requests
                 </Typography>
                 <div className="flex flex-col gap-y-4">
-                    {REQUESTS.length === 0 ? (
+                    {requests.length === 0 ? (
                         <div className="w-fit mx-auto justify-self-center">
                             <Alert
                                 variant="ghost"
@@ -34,8 +45,9 @@ const HackathonRequests = () => {
                             </Alert>
                         </div>
                     ) : (
-                        REQUESTS?.map((request) => (
+                        requests?.map((request, index) => (
                             <HackathonRequestCard
+                                key={index}
                                 name={request.name}
                                 email={request.email}
                                 details={request.details}

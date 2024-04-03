@@ -8,6 +8,7 @@ const token = Cookies.get("token");
 const initialState = {
     // hackathons:{
     data: [],
+    requests: [],
     loading: false,
     error: null,
     // }
@@ -28,7 +29,7 @@ export const fetchHackathons = createAsyncThunk(
 );
 export const hackathonCreation = createAsyncThunk(
     "hackathon/hackathonCreation",
-    async ({formData, token}, thunkAPI) => {
+    async ({ formData, token }, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -52,7 +53,7 @@ export const hackathonCreation = createAsyncThunk(
 
 export const hackathonEnd = createAsyncThunk(
     "hackathon/hackathonEnd",
-    async ({hackathonId, token}, thunkAPI) => {
+    async ({ hackathonId, token }, thunkAPI) => {
         try {
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -80,6 +81,26 @@ export const newRequest = createAsyncThunk(
                 "http://localhost:8080/ContactDetails/Contact",
                 formData
             );
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+export const fetchRequests = createAsyncThunk(
+    "hackathon/fetchRequests",
+    async ({ token }, thunkAPI) => {
+        try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await axios.get(
+                "http://localhost:8080/Admin/contactDetails",
+                { headers }
+            );
+            if (!response.data) {
+                return [];
+            }
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -148,6 +169,20 @@ const hackathonSlice = createSlice({
                 state.loading = false;
                 // state.data = null;
                 state.error = action.payload; // Set error payload
+            })
+            .addCase(fetchRequests.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchRequests.fulfilled, (state, action) => {
+                state.loading = false;
+                state.requests = action.payload; // Extract data from the response
+                state.error = null;
+            })
+            .addCase(fetchRequests.rejected, (state, action) => {
+                state.loading = false;
+                state.requests = [];
+                state.error = action.payload; // Set error payload
             });
     },
 });
@@ -157,6 +192,8 @@ export const selectHackathonById = (state, hackathonId) =>
     state.hackathon.data?.find(
         (hackathon) => hackathon.hackathonId === Number(hackathonId)
     ) || null;
+
+export const selectRequests = (state) => state.hackathon.requests;
 export const selectErrorHackathon = (state) => state.hackathon.error;
 export const selectLoadingHackathon = (state) => state.hackathon.loading;
 

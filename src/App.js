@@ -11,7 +11,9 @@ import Hackathons from "./pages/Hackathons";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchHackathons,
+    fetchRequests,
     selectHackathons,
+    selectRequests,
 } from "./features/hackathon/hackathonSlice";
 import {
     reattemptLogin,
@@ -46,6 +48,12 @@ function App() {
     // useSelector((state) => state.hackathon.hackathons.data);
     const userData = useSelector(selectUserDetails);
 
+    // const requests = useSelector(selectRequests);
+
+    // useEffect(() => {
+    //     console.log(requests);
+    // }, [requests]);
+
     // const token = Cookies.get("token");
     useEffect(() => {
         dispatch(fetchHackathons());
@@ -54,7 +62,8 @@ function App() {
         //
 
         if (userData?.role === "admin") {
-            dispatch(fetchEvaluators({token}));
+            dispatch(fetchEvaluators({ token }));
+            dispatch(fetchRequests({ token }));
         }
         if (userData?.role === "participant") {
             dispatch(fetchTeamDetails({ userId, token }));
@@ -72,7 +81,7 @@ function App() {
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
                     panelistid: userId,
-                    token
+                    token,
                 })
             );
         }
@@ -97,13 +106,6 @@ function App() {
 
     const userId = useSelector(selectUserId);
 
-    // const userId = USER?.userId
-    // const data = useSelector((state) => state.user.login.data);
-    // const userId = data ? data.data.userId : null;
-    // useEffect(() => {
-    // }, []);
-
-    // const [reviewedIdeas, setReviewedIdeas] = useState([]);
 
     return (
         <div className="App">
@@ -144,12 +146,12 @@ function App() {
                         path="judge/review"
                         element={
                             <JudgeReview
-                            // reviewedIdeas={reviewedIdeas}
-                            // setReviewedIdeas={setReviewedIdeas}
                             />
                         }
                     />
-                    <Route path="trial" element={<HackathonRequests />} />
+                    
+                    <Route path="admin/requests" element={<HackathonRequests />} />
+                    {/* <Route path="trial" element={<HackathonRequests />} /> */}
                 </Routes>
             </BrowserRouter>
         </div>
