@@ -59,7 +59,7 @@ export const hackathonEnd = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.put(
-                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`,
+                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`, {},
                 { headers }
             );
             // console.log(response);
