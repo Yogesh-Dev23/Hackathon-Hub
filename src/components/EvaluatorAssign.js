@@ -9,6 +9,7 @@ import {
     MenuHandler,
     MenuList,
     MenuItem,
+    Chip,
 } from "@material-tailwind/react";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -34,6 +35,13 @@ const EvaluatorAssign = () => {
     const evaluators = useSelector(selectEvaluators);
     // EVALUATORS;
     // useSelector((state) => state.evaluator.evaluators?.data) || [];
+
+    const themes = [
+        { name: "Life Sciences", short: "LS" },
+        { name: "Banking and Wealth Management", short: "B&WM" },
+        { name: "Telecom", short: "TL" },
+        { name: "Product Engineering", short: "PE" },
+    ];
 
     const [JUDGES, setJUDGES] = useState(
         evaluators?.filter((evaluator) => evaluator.role === "judge")
@@ -75,6 +83,7 @@ const EvaluatorAssign = () => {
         name: "",
         email: "",
         role: "",
+        domain: "",
         isAvailable: true,
     });
 
@@ -83,6 +92,7 @@ const EvaluatorAssign = () => {
             name: "",
             email: "",
             role: "",
+            domain: "",
             isAvailable: true,
         });
     }, [selectedRole]);
@@ -132,6 +142,7 @@ const EvaluatorAssign = () => {
                 name: "",
                 email: "",
                 role: "",
+                domain: "",
                 isAvailable: true,
             });
             setSelectedRole({
@@ -162,106 +173,115 @@ const EvaluatorAssign = () => {
                     Welcome! Assign the evaluator to a hackathon.
                 </Typography>
                 <form className="mt-3 mb-2">
-                    <div className="mb-1 flex flex-col gap-4">
-                        <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="-mb-3"
-                        >
-                            Hackathon
-                        </Typography>
-                        <div className="relative flex w-full max-w-[24rem]">
-                            <Menu placement="bottom-start">
-                                <MenuHandler>
-                                    <Button
-                                        ripple={false}
-                                        variant="text"
-                                        color="blue-gray"
-                                        className="relative flex h-10 w-full items-center justify-between gap-2 border-blue-gray-200 bg-blue-gray-500/10 pl-3"
-                                    >
-                                        {selectedHackathon.name || ""}
-                                        <ChevronDownIcon className="absolute w-4 h-4 right-3" />
-                                    </Button>
-                                </MenuHandler>
-                                <MenuList className="max-h-[20rem] max-w-[18rem]">
-                                    {hackathons.length === 0 ||
-                                    hackathons.every(
-                                        (hackathon) =>
-                                            hackathon.isCompleted === true
-                                    ) ? (
-                                        <MenuItem
-                                            className="flex items-center gap-2"
-                                            disabled={true}
+                    <div className="mb-1 flex flex-col gap-3">
+                        <div>
+                            <Typography
+                                variant="h6"
+                                color="blue-gray"
+                                // className="-mb-3"
+                            >
+                                Hackathon
+                            </Typography>
+                            <div className="relative flex w-full max-w-[24rem]">
+                                <Menu placement="bottom-start">
+                                    <MenuHandler>
+                                        <Button
+                                            ripple={false}
+                                            variant="text"
+                                            color="blue-gray"
+                                            className="relative flex h-10 w-full items-center justify-between gap-2 border-blue-gray-200 bg-blue-gray-500/10 pl-3"
                                         >
-                                            No available hackathons.
-                                        </MenuItem>
-                                    ) : (
-                                        hackathons.map((hackathon, index) => {
-                                            if (!hackathon.isCompleted) {
-                                                return (
-                                                    <MenuItem
-                                                        key={index}
-                                                        value={hackathon.name}
-                                                        className="flex items-center gap-2"
-                                                        onClick={() =>
-                                                            setSelectedHackathon(
-                                                                hackathons[
-                                                                    index
-                                                                ]
-                                                            )
-                                                        }
-                                                    >
-                                                        {hackathon.name}
-                                                    </MenuItem>
-                                                );
-                                            } else {
-                                                return null;
-                                            }
-                                        })
-                                    )}
-                                </MenuList>
-                            </Menu>
-                        </div>
-                        <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="-mb-3"
-                        >
-                            Role
-                        </Typography>
-                        <div className="relative flex w-full max-w-[24rem]">
-                            <Menu placement="bottom-start">
-                                <MenuHandler>
-                                    <Button
-                                        ripple={false}
-                                        variant="text"
-                                        color="blue-gray"
-                                        className="relative flex h-10 w-full items-center gap-2 border-blue-gray-200 bg-blue-gray-500/10 pl-3"
-                                    >
-                                        {selectedRole.name || ""}
-                                        <ChevronDownIcon className="absolute w-4 h-4 right-3" />
-                                    </Button>
-                                </MenuHandler>
-                                <MenuList className="max-h-[20rem] max-w-[18rem]">
-                                    {roles.map(({ name }, index) => {
-                                        return (
+                                            {selectedHackathon.name || ""}
+                                            <ChevronDownIcon className="absolute w-4 h-4 right-3" />
+                                        </Button>
+                                    </MenuHandler>
+                                    <MenuList className="max-h-[20rem] max-w-[18rem]">
+                                        {hackathons.length === 0 ||
+                                        hackathons.every(
+                                            (hackathon) =>
+                                                hackathon.isCompleted === true
+                                        ) ? (
                                             <MenuItem
-                                                key={index}
-                                                value={name}
                                                 className="flex items-center gap-2"
-                                                onClick={() =>
-                                                    setSelectedRole(
-                                                        roles[index]
-                                                    )
-                                                }
+                                                disabled={true}
                                             >
-                                                {name}
+                                                No available hackathons.
                                             </MenuItem>
-                                        );
-                                    })}
-                                </MenuList>
-                            </Menu>
-                            {/* <Input
+                                        ) : (
+                                            hackathons.map(
+                                                (hackathon, index) => {
+                                                    if (
+                                                        !hackathon.isCompleted
+                                                    ) {
+                                                        return (
+                                                            <MenuItem
+                                                                key={index}
+                                                                value={
+                                                                    hackathon.name
+                                                                }
+                                                                className="flex items-center gap-2"
+                                                                onClick={() =>
+                                                                    setSelectedHackathon(
+                                                                        hackathons[
+                                                                            index
+                                                                        ]
+                                                                    )
+                                                                }
+                                                            >
+                                                                {hackathon.name}
+                                                            </MenuItem>
+                                                        );
+                                                    } else {
+                                                        return null;
+                                                    }
+                                                }
+                                            )
+                                        )}
+                                    </MenuList>
+                                </Menu>
+                            </div>
+                        </div>
+                        <div>
+                            <Typography
+                                variant="h6"
+                                color="blue-gray"
+                                // className="-mb-3"
+                            >
+                                Role
+                            </Typography>
+                            <div className="relative flex w-full max-w-[24rem]">
+                                <Menu placement="bottom-start">
+                                    <MenuHandler>
+                                        <Button
+                                            ripple={false}
+                                            variant="text"
+                                            color="blue-gray"
+                                            className="relative flex h-10 w-full items-center gap-2 border-blue-gray-200 bg-blue-gray-500/10 pl-3"
+                                        >
+                                            {selectedRole.name || ""}
+                                            <ChevronDownIcon className="absolute w-4 h-4 right-3" />
+                                        </Button>
+                                    </MenuHandler>
+                                    <MenuList className="max-h-[20rem] max-w-[18rem]">
+                                        {roles.map(({ name }, index) => {
+                                            return (
+                                                <MenuItem
+                                                    key={index}
+                                                    value={name}
+                                                    className="flex items-center gap-2"
+                                                    onClick={() =>
+                                                        setSelectedRole(
+                                                            roles[index]
+                                                        )
+                                                    }
+                                                >
+                                                    {name}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </MenuList>
+                                </Menu>
+                                {/* <Input
                                 placeholder="John Doe"
                                 className="rounded-l-none !border-t-blue-gray-200 focus:!border-t-gray-900"
                                 labelProps={{
@@ -272,128 +292,189 @@ const EvaluatorAssign = () => {
                                     className: "min-w-0",
                                 }}
                             /> */}
+                            </div>
                         </div>
-                        <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="-mb-3"
-                        >
-                            Evaluator
-                        </Typography>
-                        <div className="relative flex w-full max-w-[24rem]">
-                            <Menu placement="bottom-start">
-                                <MenuHandler>
-                                    <Button
-                                        ripple={false}
-                                        variant="text"
-                                        color="blue-gray"
-                                        className="relative flex h-10 w-full items-center gap-2 border-blue-gray-200 bg-blue-gray-500/10 pl-3"
-                                        disabled={selectedRole.name === ""}
-                                    >
-                                        {selectedEvaluator.name || ""}
-                                        <ChevronDownIcon className="absolute w-4 h-4 right-3" />
-                                    </Button>
-                                </MenuHandler>
-                                <MenuList className="max-h-[20rem] max-w-[18rem]">
-                                    {selectedRole.name === "Panelist" ? (
-                                        PANELISTS.length === 0 ||
-                                        PANELISTS.every(
-                                            (evaluator) =>
-                                                evaluator.available === false
-                                        ) ? (
-                                            <MenuItem
-                                                className="flex items-center gap-2"
-                                                disabled={true}
-                                            >
-                                                No available panelist.
-                                            </MenuItem>
-                                        ) : (
-                                            PANELISTS.map(
-                                                (evaluator, index) => {
-                                                    //   if (evaluator.isAvailable) {
-                                                    return evaluator.available ? (
-                                                        <MenuItem
-                                                            key={index}
-                                                            value={
-                                                                evaluator.name
-                                                            }
-                                                            className="flex items-center gap-2"
-                                                            onClick={() =>
-                                                                setSelectedEvaluator(
-                                                                    evaluator
-                                                                )
-                                                            }
-                                                        >
-                                                            {evaluator.name}
-                                                        </MenuItem>
-                                                    ) : null;
-                                                    //   }
-                                                }
-                                            )
-                                        )
-                                    ) : selectedRole.name === "Judge" ? (
-                                        JUDGES.length === 0 ||
-                                        JUDGES.every(
-                                            (evaluator) =>
-                                                evaluator.available === false
-                                        ) ? (
-                                            <MenuItem
-                                                className="flex items-center gap-2"
-                                                disabled={true}
-                                            >
-                                                No available judge.
-                                            </MenuItem>
-                                        ) : (
-                                            JUDGES.map((evaluator, index) => {
-                                                //   if (evaluator.isAvailable) {
-                                                return evaluator.available ? (
-                                                    <MenuItem
-                                                        key={index}
-                                                        value={evaluator.name}
-                                                        className="flex items-center gap-2"
-                                                        onClick={() =>
-                                                            setSelectedEvaluator(
-                                                                evaluator
-                                                            )
-                                                        }
-                                                    >
-                                                        {evaluator.name}
-                                                    </MenuItem>
-                                                ) : null;
-                                                //   }
-                                            })
-                                        )
-                                    ) : (
-                                        <MenuItem
-                                            className="flex items-center gap-2"
-                                            disabled={true}
+                        <div>
+                            <Typography
+                                variant="h6"
+                                color="blue-gray"
+                                // className="-mb-3"
+                            >
+                                Evaluator
+                            </Typography>
+                            <div className="relative flex w-full max-w-[24rem]">
+                                <Menu placement="bottom-start">
+                                    <MenuHandler>
+                                        <Button
+                                            ripple={false}
+                                            variant="text"
+                                            color="blue-gray"
+                                            className="relative flex h-10 w-full items-center gap-2 border-blue-gray-200 bg-blue-gray-500/10 pl-3"
+                                            disabled={selectedRole.name === ""}
                                         >
-                                            Select a role.
-                                        </MenuItem>
-                                    )}
-                                </MenuList>
-                            </Menu>
+                                            {selectedEvaluator.name || ""}
+                                            {selectedEvaluator?.domain ? (
+                                                <Chip
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    value={
+                                                        themes.find(
+                                                            (theme) =>
+                                                                theme.name ===
+                                                                selectedEvaluator?.domain
+                                                        )?.short || ""
+                                                    }
+                                                />
+                                            ) : null}
+                                            <ChevronDownIcon className="absolute w-4 h-4 right-3" />
+                                        </Button>
+                                    </MenuHandler>
+                                    <MenuList className="max-h-[20rem] max-w-[18rem]">
+                                        {selectedRole.name === "Panelist" ? (
+                                            PANELISTS.length === 0 ||
+                                            PANELISTS.every(
+                                                (evaluator) =>
+                                                    evaluator.available ===
+                                                    false
+                                            ) ? (
+                                                <MenuItem
+                                                    className="flex items-center gap-2"
+                                                    disabled={true}
+                                                >
+                                                    No available panelist.
+                                                </MenuItem>
+                                            ) : (
+                                                PANELISTS.map(
+                                                    (evaluator, index) => {
+                                                        // console.log(evaluator.domain);
+
+                                                        //   if (evaluator.isAvailable) {
+                                                        return evaluator.available ? (
+                                                            <MenuItem
+                                                                key={index}
+                                                                value={
+                                                                    evaluator.name
+                                                                }
+                                                                className="flex items-center gap-2"
+                                                                onClick={() =>
+                                                                    setSelectedEvaluator(
+                                                                        evaluator
+                                                                    )
+                                                                }
+                                                            >
+                                                                {evaluator.name}
+                                                                {evaluator.domain ? (
+                                                                    <Chip
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        value={
+                                                                            themes.find(
+                                                                                (
+                                                                                    theme
+                                                                                ) =>
+                                                                                    theme.name ===
+                                                                                    evaluator?.domain
+                                                                            )
+                                                                                ?.short ||
+                                                                            ""
+                                                                        }
+                                                                    />
+                                                                ) : null}
+                                                            </MenuItem>
+                                                        ) : null;
+                                                        //   }
+                                                    }
+                                                )
+                                            )
+                                        ) : selectedRole.name === "Judge" ? (
+                                            JUDGES.length === 0 ||
+                                            JUDGES.every(
+                                                (evaluator) =>
+                                                    evaluator.available ===
+                                                    false
+                                            ) ? (
+                                                <MenuItem
+                                                    className="flex items-center gap-2"
+                                                    disabled={true}
+                                                >
+                                                    No available judge.
+                                                </MenuItem>
+                                            ) : (
+                                                JUDGES.map(
+                                                    (evaluator, index) => {
+                                                        //   if (evaluator.isAvailable) {
+                                                        return evaluator.available ? (
+                                                            <MenuItem
+                                                                key={index}
+                                                                value={
+                                                                    evaluator.name
+                                                                }
+                                                                className="flex items-center gap-2"
+                                                                onClick={() =>
+                                                                    setSelectedEvaluator(
+                                                                        evaluator
+                                                                    )
+                                                                }
+                                                            >
+                                                                {evaluator.name}
+                                                                {evaluator?.domain ? (
+                                                                    <Chip
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        value={
+                                                                            themes.find(
+                                                                                (
+                                                                                    theme
+                                                                                ) =>
+                                                                                    theme.name ===
+                                                                                    evaluator?.domain
+                                                                            )
+                                                                                ?.short ||
+                                                                            ""
+                                                                        }
+                                                                        className="text-xs"
+                                                                    />
+                                                                ) : null}
+                                                            </MenuItem>
+                                                        ) : null;
+                                                        //   }
+                                                    }
+                                                )
+                                            )
+                                        ) : (
+                                            <MenuItem
+                                                className="flex items-center gap-2"
+                                                disabled={true}
+                                            >
+                                                Select a role.
+                                            </MenuItem>
+                                        )}
+                                    </MenuList>
+                                </Menu>
+                            </div>
                         </div>
-                        <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="-mb-3"
-                        >
-                            Email
-                        </Typography>
-                        <Input
-                            placeholder="name@mail.com"
-                            disabled
-                            value={selectedEvaluator.email || ""}
-                            className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                            labelProps={{
-                                className:
-                                    "before:content-none after:content-none",
-                            }}
-                            containerProps={{
-                                className: "min-w-0",
-                            }}
-                        />
+                        <div>
+                            <Typography
+                                variant="h6"
+                                color="blue-gray"
+                                // className="-mb-3"
+                            >
+                                Email
+                            </Typography>
+                            <Input
+                                placeholder="name@mail.com"
+                                disabled
+                                value={selectedEvaluator.email || ""}
+                                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                                labelProps={{
+                                    className:
+                                        "before:content-none after:content-none",
+                                }}
+                                containerProps={{
+                                    className: "min-w-0",
+                                }}
+                            />
+                        </div>
                     </div>
                     <Button
                         className="mt-6"
