@@ -72,7 +72,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
         setSelectedIdea(
             IDEAS?.find((idea) => idea?.teamId === selectedIdeaId) || IDEAS[0]
         );
-    }, [selectedIdeaId]);
+    }, [selectedIdeaId, IDEAS]);
 
     const [openRules, setOpenRules] = useState(false);
 

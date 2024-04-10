@@ -90,6 +90,7 @@ const IdeaDetails = () => {
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
                 ideaDomain: teamDetails.ideaDomain,
+                ideaBody: teamDetails.ideaBody,
             });
         }
         if (teamDetails?.status === "selected") {
@@ -98,6 +99,7 @@ const IdeaDetails = () => {
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
                 ideaDomain: teamDetails.ideaDomain,
+                ideaBody: teamDetails.ideaBody,
             });
         }
         if (teamDetails?.status === "implemented") {
@@ -106,6 +108,7 @@ const IdeaDetails = () => {
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
                 ideaDomain: teamDetails.ideaDomain,
+                ideaBody: teamDetails.ideaBody,
             });
 
             setRepoData({
@@ -121,6 +124,7 @@ const IdeaDetails = () => {
                 ...ideaData,
                 ideaTitle: teamDetails.ideaTitle,
                 ideaDomain: teamDetails.ideaDomain,
+                ideaBody: teamDetails.ideaBody,
             });
         }
     }, [teamDetails]);

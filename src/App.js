@@ -36,6 +36,7 @@ import { Slide, ToastContainer, toast } from "react-toastify";
 import { fetchEvaluators } from "./features/evaluator/evaluatorSlice";
 import Cookies from "js-cookie";
 import HackathonRequests from "./pages/HackathonRequests";
+import PastTeams from "./pages/PastTeams";
 // import Cookies from "js-cookie";
 function App() {
     const dispatch = useDispatch();
@@ -151,7 +152,9 @@ function App() {
                     />
                     
                     <Route path="admin/requests" element={<HackathonRequests />} />
-                    {/* <Route path="trial" element={<HackathonRequests />} /> */}
+                    <Route path="participations" element={<PastTeams />} />
+                    
+                    {/* <Route path="trial" element={<PastTeams />} /> */}
                 </Routes>
             </BrowserRouter>
         </div>

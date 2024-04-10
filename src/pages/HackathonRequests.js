@@ -18,7 +18,7 @@ const HackathonRequests = () => {
     const [requests, setRequests] = useState([]);
 
     useEffect(() => {
-        console.log(requestsData);
+        // console.log(requestsData);
         if (requestsData.length > 0) {
             setRequests(requestsData);
         }
