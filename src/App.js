@@ -37,9 +37,23 @@ import { fetchEvaluators } from "./features/evaluator/evaluatorSlice";
 import Cookies from "js-cookie";
 import HackathonRequests from "./pages/HackathonRequests";
 import PastTeams from "./pages/PastTeams";
+import { gapi } from "gapi-script";
+
+import { CLIENT_ID } from "./constants";
 // import Cookies from "js-cookie";
 function App() {
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        function start() {
+            gapi.client.init({
+                clientId: CLIENT_ID,
+                scope: "https://www.googleapis.com/auth/userinfo.profile",
+            });
+        }
+
+        gapi.load("client:auth2", start);
+    });
 
     //change to this for redux integration
     const hackathons = useSelector(selectHackathons);
@@ -107,7 +121,6 @@ function App() {
 
     const userId = useSelector(selectUserId);
 
-
     return (
         <div className="App">
             <ToastContainer
@@ -143,17 +156,14 @@ function App() {
                         path="panelist/shortlist"
                         element={<PanelistShortlist />}
                     />
+                    <Route path="judge/review" element={<JudgeReview />} />
+
                     <Route
-                        path="judge/review"
-                        element={
-                            <JudgeReview
-                            />
-                        }
+                        path="admin/requests"
+                        element={<HackathonRequests />}
                     />
-                    
-                    <Route path="admin/requests" element={<HackathonRequests />} />
                     <Route path="participations" element={<PastTeams />} />
-                    
+
                     {/* <Route path="trial" element={<PastTeams />} /> */}
                 </Routes>
             </BrowserRouter>

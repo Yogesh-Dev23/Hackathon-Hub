@@ -145,6 +145,8 @@ const HACKATHONS =
     },
 ];
 
+const CLIENT_ID = "855795644664-9q4db9e2ganku0bt3ilfdk87p5pr1gm1.apps.googleusercontent.com"
+
 const EVALUATORS = [
     {
         userId: 2,
@@ -330,4 +332,4 @@ const REQUESTS = [
     },
 ];
 
-export { HACKATHONS, USER, EVALUATORS, TEAMS, REQUESTS };
+export { HACKATHONS, USER, EVALUATORS, TEAMS, REQUESTS, CLIENT_ID };
