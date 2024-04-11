@@ -188,13 +188,12 @@ const ListEvaluator = ({ handleAddMembers, handleAssignMembers }) => {
                                 const classes = isLast
                                     ? "p-4"
                                     : "p-4 border-b border-blue-gray-50";
-
                                 return (
                                     <tr key={evaluator.userId}>
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
                                                 <Avatar
-                                                    src="https://avatar.iran.liara.run/public"
+                                                    src={`https://ui-avatars.com/api/?background=random&name=${evaluator?.name[0]}`}
                                                     alt={evaluator?.name}
                                                     size="sm"
                                                 />

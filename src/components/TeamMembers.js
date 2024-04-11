@@ -57,7 +57,7 @@ const TeamMembers = () => {
                                         <Avatar
                                             variant="circular"
                                             alt="candice"
-                                            src="https://avatar.iran.liara.run/public"
+                                            src={`https://ui-avatars.com/api/?background=random&name=${member?.name[0]}`}     
                                         />
                                     </ListItemPrefix>
                                     <div>

@@ -268,7 +268,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                             <Typography>{selectedHackathon?.prizes}</Typography>
                         </div>
                         <div className="w-fit mt-2 mx-auto">
-                            {user?.role === "participant" ? (
+                            {user?.role === "participant" && !selectedHackathon?.isCompleted ? (
                                 <Button
                                     disabled={!user.available}
                                     onClick={() => setOpen((cur) => !cur)}

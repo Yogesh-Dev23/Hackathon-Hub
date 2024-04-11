@@ -8,6 +8,7 @@ import {
     Button,
     Alert,
     Rating,
+    Chip,
 } from "@material-tailwind/react";
 import BaseLayout from "../components/BaseLayout";
 import { selectTeams } from "../features/team/teamSlice";
@@ -40,7 +41,7 @@ const PastTeams = () => {
                     variant="h3"
                     className="mb-3 text-incedo-secondary-600"
                 >
-                    Past Participations
+                    My Participations
                 </Typography>
                 <div className="grid grid-cols-1 auto-cols-fr md:grid-cols-2 gap-4">
                     {pastTeams.length > 0 ? (
@@ -56,7 +57,7 @@ const PastTeams = () => {
                                     shadow={false}
                                     className="mx-0 flex items-center gap-4 p-1 pb-3"
                                 >
-                                    <div className="flex w-full flex-col gap-0.5">
+                                    <div className="flex w-full flex-col px-1 gap-0.5">
                                         <div className="flex items-center justify-between">
                                             <Typography
                                                 variant="h5"
@@ -72,12 +73,15 @@ const PastTeams = () => {
                                             </Typography>
                                             <Typography>4.7/5.0</Typography>
                                         </div>
-                                        <Typography
-                                            className="px-1"
-                                            color="blue-gray"
-                                        >
-                                            {team?.ideaTitle}
-                                        </Typography>
+                                        <div className="flex items-baseline gap-2 justify-start">
+                                            <Typography
+                                                className=""
+                                                color="blue-gray"
+                                            >
+                                                {team?.ideaTitle}
+                                            </Typography>
+                                            <Chip size="sm" variant="ghost" className="rounded-xl font-normal" value={team?.status} />
+                                        </div>
                                     </div>
                                 </CardHeader>
                                 <CardBody className="mb-3 py-0 px-2 flex justify-between items-end">
