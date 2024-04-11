@@ -249,7 +249,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">
                             <Typography variant="h4">
-                                Rules and Guidlines
+                                Rules
                             </Typography>
                             <Typography>{selectedHackathon?.rules}</Typography>
                         </div>
@@ -263,12 +263,12 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">
                             <Typography variant="h4">
-                                Rewards and Prizes
+                                Prizes
                             </Typography>
                             <Typography>{selectedHackathon?.prizes}</Typography>
                         </div>
                         <div className="w-fit mt-2 mx-auto">
-                            {user?.role === "participant" ? (
+                            {user?.role === "participant" && !selectedHackathon?.isCompleted ? (
                                 <Button
                                     disabled={!user.available}
                                     onClick={() => setOpen((cur) => !cur)}

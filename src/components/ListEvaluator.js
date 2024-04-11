@@ -44,13 +44,19 @@ const TABS = [
     },
 ];
 
-const TABLE_HEAD = ["Member", "Role", "Status"];
+const TABLE_HEAD = ["Member", "Role", "Domain", "Status"];
 // , "Actions"
 
 //   https://avatar.iran.liara.run/public
 // https://ui-avatars.com/api/?background=random&name=Vidit+Bhanja
 
 const ListEvaluator = ({ handleAddMembers, handleAssignMembers }) => {
+    const themes = [
+        { name: "Life Sciences", short: "LS" },
+        { name: "Banking and Wealth Management", short: "B&WM" },
+        { name: "Telecom", short: "TL" },
+        { name: "Product Engineering", short: "PE" },
+    ];
     const dispatch = useDispatch();
     // useEffect(() => {
     //     dispatch(fetchEvaluators());
@@ -156,9 +162,11 @@ const ListEvaluator = ({ handleAddMembers, handleAssignMembers }) => {
                                         key={head}
                                         className={
                                             head === "Role" ||
-                                            head === "Status" ||
+                                            head === "Domain" ||
                                             head === "Actions"
                                                 ? "border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 hidden lg:table-cell"
+                                                : head === "Status"
+                                                ? "border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 hidden xl:table-cell"
                                                 : "border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
                                         }
                                     >
@@ -180,13 +188,12 @@ const ListEvaluator = ({ handleAddMembers, handleAssignMembers }) => {
                                 const classes = isLast
                                     ? "p-4"
                                     : "p-4 border-b border-blue-gray-50";
-
                                 return (
                                     <tr key={evaluator.userId}>
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
                                                 <Avatar
-                                                    src="https://avatar.iran.liara.run/public"
+                                                    src={`https://ui-avatars.com/api/?background=random&name=${evaluator?.name[0]}`}
                                                     alt={evaluator?.name}
                                                     size="sm"
                                                 />
@@ -240,7 +247,23 @@ const ListEvaluator = ({ handleAddMembers, handleAssignMembers }) => {
                                                 )}
                                             </div>
                                         </td>
+
                                         <td className="p-4 hidden lg:table-cell">
+                                            <div className="w-max">
+                                                <Chip
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    value={
+                                                        themes.find(
+                                                            (theme) =>
+                                                                theme.name ===
+                                                                evaluator?.domain
+                                                        )?.short || ""
+                                                    }
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="p-4 hidden xl:table-cell">
                                             <div className="w-max">
                                                 <Chip
                                                     variant="ghost"

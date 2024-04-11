@@ -6,6 +6,8 @@ import {
     selectErrorUser,
     selectLoadingUser,
     selectUserDetails,
+    ssoRegister,
+    updateToken,
     userLogin,
     userRegistration,
 } from "../features/user/userSlice";
@@ -20,6 +22,9 @@ import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
+import GoogleLogin from "react-google-login";
+import { CLIENT_ID } from "../constants";
 
 const Signup = ({
     showModal,
@@ -93,22 +98,45 @@ const Signup = ({
         setShowError(false);
     }, [showModal]);
 
-    // useEffect(() => {
-    //     if (status === 200) {
-    //         setEmailVerification(true);
-    //     }
-    //     if (status === 201) {
-    //         setShowSignUpModal(false);
-    //         // toast.success("Sign Up Successfull!", {
-    //         //     position: "top-center",
-    //         //     transition:Slide
-    //         // });
-    //         // dispatch(userLogin(loginData));
-    //         // navigate('/')
-    //     }
-    // }, [status]);
+    const handleGoogleSignUpSuccess = async (res) => {
+        try {
+            await dispatch(ssoRegister(res.tokenId)).unwrap();
+            // await dispatch(userLogin(formData1)).unwrap();
+            const token = Cookies.get("token");
+            if (token) {
+                dispatch(updateToken(token));
+            }
+            setShowError(false);
+            setValidationErrors({});
+            handleToggleSignIn(false);
+            navigate("/hackathons");
+            toast.success("Login Successful!");
+        } catch (error) {
+            setShowError(true);
+        }
+        // sendUserDataToBackend(res.profileObj);
+        //   window.location.href = "http://localhost:5173/team-dashboard/";
+    };
+
+    const handleGoogleSignUpFailure = (res) => {
+        const newErrors = {};
+        if (res.error === "popup_closed_by_user") {
+            setValidationErrors({
+                ssoError: "Google login popup closed by the user.",
+            });
+            console.log("Google login popup closed by the user.");
+            // Optionally, you can show a message to the user indicating that the login process was cancelled.
+        } else {
+            setValidationErrors({
+                ssoError: "Login failed! Please try again..",
+            });
+            console.log("Login failed! res: ", res);
+        }
+    };
+
     const [validationErrors, setValidationErrors] = useState({});
-    const handleEmailVerification = async () => {
+    const handleEmailVerification = async (e) => {
+        e.preventDefault();
         const newErrors = {};
         if (!formData.name) {
             newErrors.name = "Name is Required!";
@@ -143,9 +171,13 @@ const Signup = ({
         try {
             e.preventDefault();
             await dispatch(otpVerification(otpDetails)).unwrap();
+            const token = Cookies.get("token");
+            if (token) {
+                dispatch(updateToken(token));
+            }
             // await dispatch(userLogin(loginData)).unwrap();
             handler();
-            toast.success("Registration Successful!");
+            toast.success("Registration Successful! User logged in.");
             // setShowSignUpModal(false);
             setShowError(false);
         } catch (error) {
@@ -201,8 +233,15 @@ const Signup = ({
                             </div>
                         ) : (
                             <form
-                                className="account-form w-full mx-auto pt-2 md:mt-2 md:p-2 max-h-96 overflow-y-auto "
-                                onSubmit={handleSubmit}
+                                className="account-form w-full mx-auto pt-2 md:mt-2 md:p-2 max-h-96"
+                                onSubmit={(e) => {
+                                    if (!emailVerification) {
+                                        handleEmailVerification(e);
+                                    }
+                                    if (emailVerification) {
+                                        handleSubmit(e);
+                                    }
+                                }}
                             >
                                 <div
                                     className={
@@ -358,12 +397,12 @@ const Signup = ({
                                     {!emailVerification && (
                                         <Button
                                             size="sm"
-                                            className="w-fit cursor-pointer"
-                                            type="button"
-                                            onClick={handleEmailVerification}
+                                            className="w-fit cursor-pointer  mx-auto"
+                                            type="submit"
+                                            // onClick={handleEmailVerification}
                                             // style={{ cursor: "pointer" }}
                                         >
-                                            Verify Email
+                                            Signup
                                         </Button>
                                     )}
 
@@ -388,18 +427,29 @@ const Signup = ({
                                 </div>
                                 <br />
                                 <div className="w-fit -mt-3 mx-auto flex justify-center flex-col">
-                                    <Button
-                                        className="btn-submit-form cursor-pointer mx-auto"
-                                        type="submit"
-                                        size="sm"
-                                        // onClick={() => {
-                                        //     handleToggleSignUp(false);
-                                        //     handleToggleSignIn(true);
-                                        // }}
-                                        // style={{ cursor: "pointer" }}
-                                    >
-                                        Sign up
-                                    </Button>
+                                    {emailVerification && (
+                                        <Button
+                                            className="btn-submit-form mb-2 cursor-pointer mx-auto"
+                                            type="submit"
+                                            size="sm"
+                                        >
+                                            Verify OTP
+                                        </Button>
+                                    )}
+                                    {!emailVerification && (
+                                        <GoogleLogin
+                                            clientId={CLIENT_ID}
+                                            buttonText="Sign up with Google"
+                                            onSuccess={
+                                                handleGoogleSignUpSuccess
+                                            }
+                                            onFailure={
+                                                handleGoogleSignUpFailure
+                                            }
+                                            cookiePolicy={"single_host_origin"}
+                                            isSignedIn={false}
+                                        />
+                                    )}
                                     <Typography
                                         variant="small"
                                         className="mt-2 flex justify-center"

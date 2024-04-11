@@ -14,6 +14,7 @@ import {
     selectErrorUser,
     selectLoadingUser,
     selectUserDetails,
+    ssoLogin,
     updateToken,
     userLogin,
 } from "../features/user/userSlice";
@@ -22,6 +23,12 @@ import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 // import { showNotification } from "./Notification";
+import { GoogleLogin } from "react-google-login";
+// import { gapi } from "gapi-script";
+import { CLIENT_ID } from "../constants";
+
+// const CLIENT_ID =
+//     "855795644664-9q4db9e2ganku0bt3ilfdk87p5pr1gm1.apps.googleusercontent.com";
 
 const Login = ({
     showModal,
@@ -47,10 +54,44 @@ const Login = ({
         handleToggleSignIn(false);
         handleToggleSignUp(true);
     };
-    const handleGoogleSignIn = () => {
-        // Call the function to initiate Google Sign-In process
-        // For example, you can use the Google Sign-In API
+
+
+    const handleGoogleSignInSuccess = async (res) => {
+        try {
+            await dispatch(ssoLogin(res.tokenId)).unwrap();
+            // await dispatch(userLogin(formData1)).unwrap();
+            const token = Cookies.get("token");
+            if (token) {
+                dispatch(updateToken(token));
+            }
+            setShowError(false);
+            setValidationErrors({});
+            handleToggleSignIn(false);
+            navigate("/hackathons");
+            toast.success("Login Successful!");
+        } catch (error) {
+            setShowError(true);
+        }
+        // sendUserDataToBackend(res.profileObj);
+        //   window.location.href = "http://localhost:5173/team-dashboard/";
     };
+
+    const handleGoogleSignInFailure = (res) => {
+        const newErrors = {};
+        if (res.error === "popup_closed_by_user") {
+            setValidationErrors({
+                ssoError: "Google login popup closed by the user.",
+            });
+            console.log("Google login popup closed by the user.");
+            // Optionally, you can show a message to the user indicating that the login process was cancelled.
+        } else {
+            setValidationErrors({
+                ssoError: "Login failed! Please try again..",
+            });
+            console.log("Login failed! res: ", res);
+        }
+    };
+
     const dispatch = useDispatch();
     const [showError, setShowError] = useState(false);
     const error = useSelector(selectErrorUser);
@@ -255,8 +296,13 @@ const Login = ({
                                                     "empty error"}
                                             </Typography>
                                         )}
+                                        {validationErrors.ssoError && (
+                                            <Typography className="text-red-500 text-xs w-fit">
+                                                {validationErrors.ssoError}
+                                            </Typography>
+                                        )}
                                         <Button
-                                            className="btn-submit-form cursor-pointer text-center"
+                                            className="btn-submit-form mb-3 cursor-pointer text-center"
                                             type="submit"
                                             size="sm"
                                             fullWidth
@@ -265,13 +311,19 @@ const Login = ({
                                         >
                                             Sign in
                                         </Button>
-                                        {/* <Button
-                                    onClick={handleGoogleSignIn}
-                                    className="btn-google-sign-in mt-2 cursor-pointer"
-                                    // style={{ cursor: "pointer", marginTop: "10px" }}
-                                >
-                                    Sign in with Google
-                                </Button> */}
+                                        <GoogleLogin
+                                            clientId={CLIENT_ID}
+                                            buttonText="Login with Google"
+                                            className="w-full flex justify-center"
+                                            onSuccess={
+                                                handleGoogleSignInSuccess
+                                            }
+                                            onFailure={
+                                                handleGoogleSignInFailure
+                                            }
+                                            cookiePolicy={"single_host_origin"}
+                                            isSignedIn={false}
+                                        />
                                         <Typography
                                             variant="small"
                                             className="mt-2 flex justify-center"

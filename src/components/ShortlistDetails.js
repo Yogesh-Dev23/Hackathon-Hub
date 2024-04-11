@@ -44,7 +44,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
     // const hackathons = useSelector((state) => state.hackathon.hackathons.data);
     // const user = USER;
     const userData = useSelector(selectUserDetails);
-    const token = useSelector(selectUserToken)
+    const token = useSelector(selectUserToken);
     // useSelector((state) => state.user.login?.data?.data);
     // console.log(hackathons);
 
@@ -72,7 +72,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
         setSelectedIdea(
             IDEAS?.find((idea) => idea?.teamId === selectedIdeaId) || IDEAS[0]
         );
-    }, [selectedIdeaId]);
+    }, [selectedIdeaId, IDEAS]);
 
     const [openRules, setOpenRules] = useState(false);
 
@@ -87,7 +87,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 dispatch(
                     acceptTeam({
                         teamId: selectedIdea?.teamId,
-                        token
+                        token,
                     })
                 ).unwrap(),
                 {
@@ -104,7 +104,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
                     panelistid: userData?.userId,
-                    token
+                    token,
                 })
             ).unwrap();
         } catch (error) {
@@ -118,7 +118,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 dispatch(
                     rejectTeam({
                         teamId: selectedIdea?.teamId,
-                        token
+                        token,
                     })
                 ).unwrap(),
                 {
@@ -135,11 +135,11 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 fetchPanelistTeamsByHackathonId({
                     hackathonId: userData?.assignedHackathon,
                     panelistid: userData?.userId,
-                    token
+                    token,
                 })
             ).unwrap();
         } catch (error) {
-            console.log(error?.message)
+            console.log(error?.message);
         }
     };
 
@@ -208,9 +208,29 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     </Typography>
                                 </div>
                                 <div className="md:col-span-1 px-2 flex flex-col items-center justify-end">
-                                    <Button onClick={handleIdeaAccept} className="bg-green-400 mb-2" size="sm" fullWidth>Accept</Button>
-                                    <Button onClick={handleIdeaReject} className="bg-red-700" size="sm" fullWidth>Reject</Button>
-                                    
+                                    <Button
+                                        onClick={handleIdeaAccept}
+                                        disabled={
+                                            selectedIdea?.status !== "submitted"
+                                        }
+                                        className="bg-green-400 mb-2"
+                                        size="sm"
+                                        fullWidth
+                                    >
+                                        Accept
+                                    </Button>
+                                    <Button
+                                        onClick={handleIdeaReject}
+                                        disabled={
+                                            selectedIdea?.status !== "submitted"
+                                        }
+                                        className="bg-red-700"
+                                        size="sm"
+                                        fullWidth
+                                    >
+                                        Reject
+                                    </Button>
+
                                     {/* <IconButton
                                         variant="text"
                                         onClick={() => {

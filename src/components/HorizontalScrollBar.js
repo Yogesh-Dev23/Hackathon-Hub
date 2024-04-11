@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardBody, Carousel, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import styles from "./HorizontalScrollBar.module.css";
@@ -20,7 +20,17 @@ const HorizontalScrollBar = () => {
     //     setDetails(item);
     // };
     const dispatch = useDispatch();
-    const hackathons = useSelector(selectHackathons);
+    const hackathonsData = useSelector(selectHackathons);
+    const [hackathons, setHackathons] = useState([]);
+
+    useEffect(() => {
+        if (hackathonsData) {
+            const newHackathons = hackathonsData.filter(
+                (hackathon) => hackathon.isCompleted === false
+            );
+            setHackathons(newHackathons);
+        }
+    }, [hackathonsData]);
     // HACKATHONS
     // useSelector((state) => state.hackathon.hackathons.data);
     // console.log(hackathons);

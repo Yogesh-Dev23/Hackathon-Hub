@@ -76,7 +76,7 @@ const TeamDetails = () => {
                             variant="h3"
                             className="mb-3 text-incedo-secondary-600"
                         >
-                            {hackthonDetails?.name} - {teamDetails?.name}
+                            {teamDetails?.name} [{hackthonDetails?.name}]
                         </Typography>
                         <TeamMembers />
                         <IdeaDetails />
