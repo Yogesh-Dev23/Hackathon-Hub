@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { Alert, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import BaseLayout from "../components/BaseLayout";
+
+import DOMPurify from "dompurify";
 import { HACKATHONS, TEAMS } from "../constants";
 import { selectHackathonById } from "../features/hackathon/hackathonSlice";
 import { selectTeamByHackathonId } from "../features/team/teamSlice";
@@ -81,17 +83,19 @@ const Results = () => {
                                 {hackathon?.name} Top Scorers
                             </h4>
                             <div className="container flex flex-col px-2 space-y-5 md:space-y-5">
-                                {!hackathon?.firstTeamName && !hackathon?.secondTeamName && !hackathon?.thirdTeamName && (
-                                    <div className="result-element bg-white/20 p-3 rounded-md ">
-                                        <div className="flex flex-row justify-between">
-                                            <div className="flex flex-row space-x-2">
-                                                <p className="font-bold text-incedo-secondary-600">
-                                                    No Team Participated.
-                                                </p>
+                                {!hackathon?.firstTeamName &&
+                                    !hackathon?.secondTeamName &&
+                                    !hackathon?.thirdTeamName && (
+                                        <div className="result-element bg-white/20 p-3 rounded-md ">
+                                            <div className="flex flex-row justify-between">
+                                                <div className="flex flex-row space-x-2">
+                                                    <p className="font-bold text-incedo-secondary-600">
+                                                        No Team Participated.
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
                                 {hackathon?.firstTeamName && (
                                     <div className="result-element bg-white/20 p-3 rounded-md ">
                                         <div className="flex flex-row justify-between">
@@ -138,7 +142,15 @@ const Results = () => {
                                 Prizes
                             </h4>
                             <div className="container flex flex-col h-[60%] space-y-5 md:space-y-5">
-                                {hackathon?.prizes}
+                                <Typography>
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                hackathon?.prizes
+                                            ),
+                                        }}
+                                    ></span>
+                                </Typography>
                             </div>
                             <Link
                                 to="/"

@@ -13,6 +13,8 @@ import {
     DialogHeader,
     DialogFooter,
 } from "@material-tailwind/react";
+
+import DOMPurify from "dompurify";
 import { useDispatch, useSelector } from "react-redux";
 import {
     acceptTeam,
@@ -230,61 +232,18 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     >
                                         Reject
                                     </Button>
-
-                                    {/* <IconButton
-                                        variant="text"
-                                        onClick={() => {
-                                            handleIdeaAccept(
-                                                selectedIdea?.teamId || ""
-                                            );
-                                        }}
-                                        // disabled={
-                                        //     selectedIdea?.status !== "submitted"
-                                        // }
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                            className="w-6 h-6 fill-green-400"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </IconButton>
-                                    <IconButton
-                                        variant="text"
-                                        onClick={() => {
-                                            handleIdeaReject(
-                                                selectedIdea?.teamId || ""
-                                            );
-                                        }}
-                                        // disabled={
-                                        //     selectedIdea?.status !== "submitted"
-                                        // }
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                            className="w-6 h-6 fill-red-700"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </IconButton> */}
                                 </div>
                             </div>
 
                             <div className="w-full mt-1 rounded-2xl p-2">
                                 <Typography className="">
-                                    {selectedIdea?.ideaBody || ""}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedIdea?.ideaBody
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                         </CardBody>
@@ -293,7 +252,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                 <Dialog open={openRules} handler={handleOpenRules}>
                     <DialogHeader>
                         <Typography
-                            className="mb-1 px-2 font-semibold flex text-incedo-secondary-600 text-left justify-start"
+                            className=" px-2 font-semibold flex text-incedo-secondary-600 text-left justify-start"
                             variant="h2"
                             // color="black"
                         >
@@ -303,16 +262,29 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                     <DialogBody>
                         <div className="overflow-auto  max-h-[60vh]">
                             <div className="w-full mt-1 rounded-2xl p-2">
-                                <Typography className="">
-                                    {selectedHackathon?.description || ""}
+                                <Typography variant="h4">
+                                    Description
+                                </Typography>
+                                <Typography>
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedHackathon?.description
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                             <div className="w-full mt-1 rounded-2xl p-2">
-                                <Typography variant="h4">
-                                    Rules and Guidlines
-                                </Typography>
+                                <Typography variant="h4">Rules</Typography>
                                 <Typography>
-                                    {selectedHackathon?.description || ""}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedHackathon?.rules
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                             <div className="w-full rounded-2xl p-2">
@@ -320,7 +292,13 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     Judging Criteria
                                 </Typography>
                                 <Typography>
-                                    {selectedHackathon?.description || ""}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedHackathon?.judgingCriteria
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                         </div>
@@ -332,14 +310,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                             onClick={handleOpenRules}
                             className="mr-1"
                         >
-                            <span>Cancel</span>
-                        </Button>
-                        <Button
-                            variant="gradient"
-                            color="green"
-                            onClick={handleOpenRules}
-                        >
-                            <span>Confirm</span>
+                            <span>Close</span>
                         </Button>
                     </DialogFooter>
                 </Dialog>
