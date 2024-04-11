@@ -30,7 +30,7 @@ import {
 
 const themes = [
     { name: "Life Sciences", value: "lifesciences" },
-    { name: "Banking and Wealth", value: "banking" },
+    { name: "Banking and Wealth Management", value: "banking" },
     { name: "Telecom", value: "telecom" },
     { name: "Product Engineering", value: "product" },
 ];
@@ -91,15 +91,26 @@ const Hackathons = () => {
 
     useEffect(() => {
         if (searchParamsObject?.theme) {
-            setFilteredHackathons(
-                hackathons.filter(
-                    (hackathon) =>
-                        themes.find((theme) => theme.name === hackathon.theme)
-                            .value === searchParamsObject.theme
-                )
+            const newHackathons = hackathons.filter(
+                (hackathon) =>
+                    themes.find((theme) => theme.name === hackathon.theme)
+                        .value === searchParamsObject.theme
             );
+            setFilteredHackathons(newHackathons);
+            if (newHackathons?.length > 0) {
+                setTotalPages(Math.floor((newHackathons?.length - 1) / 6 + 1));
+            }
+            if (newHackathons?.length === 0) {
+                setTotalPages(0);
+            }
         } else {
             setFilteredHackathons(hackathons);
+            if (hackathons?.length > 0) {
+                setTotalPages(Math.floor((hackathons?.length - 1) / 6 + 1));
+            }
+            if (hackathons?.length === 0) {
+                setTotalPages(0);
+            }
         }
         if (searchParamsObject?.hackathonId) {
             setSelectedHackathonId(Number(searchParamsObject.hackathonId));
@@ -117,6 +128,7 @@ const Hackathons = () => {
     // useEffect(() => {
     //     setFilteredHackathons(hackathons);
     // }, [hackathons]);
+    const [totalPages, setTotalPages] = useState(0);
 
     const [activePage, setActivePage] = React.useState(1);
 
@@ -126,7 +138,7 @@ const Hackathons = () => {
     });
 
     const nextPage = () => {
-        if (activePage === 5) return;
+        if (activePage === totalPages) return;
 
         setActivePage(activePage + 1);
     };
@@ -142,16 +154,27 @@ const Hackathons = () => {
         if (keyword === "all") {
             // console.log(hackathons)
             setFilteredHackathons(hackathons);
+            if (hackathons?.length > 0) {
+                setTotalPages(Math.floor((hackathons?.length - 1) / 6 + 1));
+            }
+            if (hackathons?.length === 0) {
+                setTotalPages(0);
+            }
             return;
         }
-
-        setFilteredHackathons(
-            hackathons.filter(
-                (hackathon) =>
-                    themes.find((theme) => theme.name === hackathon.theme)
-                        .value === keyword
-            )
+        const newHackathons = hackathons.filter(
+            (hackathon) =>
+                themes.find((theme) => theme.name === hackathon.theme).value ===
+                keyword
         );
+        setFilteredHackathons(newHackathons);
+
+        if (newHackathons?.length > 0) {
+            setTotalPages(Math.floor((newHackathons?.length - 1) / 6 + 1));
+        }
+        if (newHackathons?.length === 0) {
+            setTotalPages(0);
+        }
     };
 
     return (
@@ -205,7 +228,11 @@ const Hackathons = () => {
                                     ) : null}
                                     {filteredHackathons.length > 6
                                         ? filteredHackathons
-                                              .slice(0, 5)
+                                              .slice(
+                                                  (activePage - 1) * 6,
+                                                  activePage * 6 ||
+                                                      filteredHackathons.length
+                                              )
                                               .map((hackathon) => {
                                                   //   console.log(
                                                   //       hackathon.name
@@ -294,35 +321,35 @@ const Hackathons = () => {
                                 {/* <VerticalBar /> */}
                             </CardBody>
                             <CardFooter className="flex justify-center pt-2 pb-4">
-                                <ButtonGroup variant="outlined" size="sm">
-                                    <IconButton onClick={prevPage}>
-                                        <ArrowLeftIcon
-                                            strokeWidth={2}
-                                            className="h-4 w-4"
-                                        />
-                                    </IconButton>
-                                    <IconButton {...getPaginationItemProps(1)}>
-                                        1
-                                    </IconButton>
-                                    <IconButton {...getPaginationItemProps(2)}>
-                                        2
-                                    </IconButton>
-                                    <IconButton {...getPaginationItemProps(3)}>
-                                        3
-                                    </IconButton>
-                                    <IconButton {...getPaginationItemProps(4)}>
-                                        4
-                                    </IconButton>
-                                    <IconButton {...getPaginationItemProps(5)}>
-                                        5
-                                    </IconButton>
-                                    <IconButton onClick={nextPage}>
-                                        <ArrowRightIcon
-                                            strokeWidth={2}
-                                            className="h-4 w-4"
-                                        />
-                                    </IconButton>
-                                </ButtonGroup>
+                                {totalPages !== 0 && (
+                                    <ButtonGroup variant="outlined" size="sm">
+                                        <IconButton onClick={prevPage}>
+                                            <ArrowLeftIcon
+                                                strokeWidth={2}
+                                                className="h-4 w-4"
+                                            />
+                                        </IconButton>
+                                        {Array(totalPages)
+                                            .fill(1)
+                                            .map((el, index) => (
+                                                <IconButton
+                                                key={index}
+                                                    {...getPaginationItemProps(
+                                                        index + 1
+                                                    )}
+                                                >
+                                                    {index + 1}
+                                                </IconButton>
+                                            ))}
+                                       
+                                        <IconButton onClick={nextPage}>
+                                            <ArrowRightIcon
+                                                strokeWidth={2}
+                                                className="h-4 w-4"
+                                            />
+                                        </IconButton>
+                                    </ButtonGroup>
+                                )}
                             </CardFooter>
                         </Card>
                         {/* <VerticalBar /> */}

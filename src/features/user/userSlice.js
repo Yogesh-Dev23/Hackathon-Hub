@@ -199,6 +199,7 @@ const userSlice = createSlice({
     reducers: {
         logout(state) {
             state.data = null;
+            state.token = "";
             // Cookies.remove("userData");
         },
         updateToken(state, action) {

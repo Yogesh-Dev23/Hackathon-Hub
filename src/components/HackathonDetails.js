@@ -11,6 +11,7 @@ import {
     TimelineItem,
     Typography,
 } from "@material-tailwind/react";
+import DOMPurify from "dompurify";
 import TeamRegistration from "./TeamRegistration";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -36,8 +37,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
         return `${shortdate}, ${time}`;
     };
 
-    
-    const user = useSelector(selectUserDetails)
+    const user = useSelector(selectUserDetails);
     // useSelector((state) => state.user.login?.data?.data);
 
     // useEffect(()=>{
@@ -104,7 +104,14 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">
                             <Typography>
-                                {selectedHackathon?.description}
+                                {/* {selectedHackathon?.description} */}
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            selectedHackathon?.description
+                                        ),
+                                    }}
+                                ></span>
                             </Typography>
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">
@@ -248,27 +255,46 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                             </div>
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">
-                            <Typography variant="h4">
-                                Rules
+                            <Typography variant="h4">Rules</Typography>
+                            <Typography>
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            selectedHackathon?.rules
+                                        ),
+                                    }}
+                                ></span>
                             </Typography>
-                            <Typography>{selectedHackathon?.rules}</Typography>
                         </div>
                         <div className="w-full rounded-2xl p-2">
                             <Typography variant="h4">
                                 Judging Criteria
                             </Typography>
                             <Typography>
-                                {selectedHackathon?.judgingCriteria}
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            selectedHackathon?.judgingCriteria
+                                        ),
+                                    }}
+                                ></span>
                             </Typography>
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">
-                            <Typography variant="h4">
-                                Prizes
+                            <Typography variant="h4">Prizes</Typography>
+                            <Typography>
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            selectedHackathon?.prizes
+                                        ),
+                                    }}
+                                ></span>
                             </Typography>
-                            <Typography>{selectedHackathon?.prizes}</Typography>
                         </div>
                         <div className="w-fit mt-2 mx-auto">
-                            {user?.role === "participant" && !selectedHackathon?.isCompleted ? (
+                            {user?.role === "participant" &&
+                            !selectedHackathon?.isCompleted ? (
                                 <Button
                                     disabled={!user.available}
                                     onClick={() => setOpen((cur) => !cur)}

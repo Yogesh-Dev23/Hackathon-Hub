@@ -15,8 +15,12 @@ import {
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 
+import DOMPurify from "dompurify";
 import { Link } from "react-router-dom";
-import { fetchJudgeTeamsByHackathonId, rateTeam } from "../features/team/teamSlice";
+import {
+    fetchJudgeTeamsByHackathonId,
+    rateTeam,
+} from "../features/team/teamSlice";
 import { selectUserDetails, selectUserToken } from "../features/user/userSlice";
 import { toast } from "react-toastify";
 
@@ -174,7 +178,13 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
 
                             <div className="w-full mt-1 rounded-2xl p-2">
                                 <Typography className="">
-                                    {selectedIdea?.ideaBody || ""}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedIdea?.ideaBody
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                             <div className="flex flex-row p-2 gap-4">
@@ -252,16 +262,29 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                     <DialogBody>
                         <div className="overflow-auto  max-h-[60vh]">
                             <div className="w-full mt-1 rounded-2xl p-2">
-                                <Typography className="">
-                                    {selectedHackathon?.description || ""}
+                                <Typography variant="h4">
+                                    Description
+                                </Typography>
+                                <Typography>
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedHackathon?.description
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                             <div className="w-full mt-1 rounded-2xl p-2">
-                                <Typography variant="h4">
-                                    Rules and Guidlines
-                                </Typography>
+                                <Typography variant="h4">Rules</Typography>
                                 <Typography>
-                                    {selectedHackathon?.description || ""}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedHackathon?.rules
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                             <div className="w-full rounded-2xl p-2">
@@ -269,7 +292,13 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     Judging Criteria
                                 </Typography>
                                 <Typography>
-                                    {selectedHackathon?.description || ""}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                selectedHackathon?.judgingCriteria
+                                            ),
+                                        }}
+                                    ></span>
                                 </Typography>
                             </div>
                         </div>
@@ -281,14 +310,7 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                             onClick={handleOpenRules}
                             className="mr-1"
                         >
-                            <span>Cancel</span>
-                        </Button>
-                        <Button
-                            variant="gradient"
-                            color="green"
-                            onClick={handleOpenRules}
-                        >
-                            <span>Confirm</span>
+                            <span>Close</span>
                         </Button>
                     </DialogFooter>
                 </Dialog>

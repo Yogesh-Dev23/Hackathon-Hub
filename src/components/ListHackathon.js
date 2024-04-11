@@ -30,13 +30,13 @@ const ListHackathon = () => {
 
     useEffect(() => {
         setHackathons(hackathonsData);
-        console.log(hackathonsData);
+        // console.log(hackathonsData);
     }, [hackathonsData]);
     // data ? data : [];
     const dispatch = useDispatch();
     const handleHackathonEnd = async (id) => {
         try {
-            console.log({ hackathonId: id, token });
+            // console.log({ hackathonId: id, token });
             await dispatch(hackathonEnd({ hackathonId: id, token })).unwrap();
             toast.success(
                 `${
@@ -93,7 +93,7 @@ const ListHackathon = () => {
                             const status = "";
 
                             return (
-                                <tr key={hackathon.name}>
+                                <tr key={hackathon.hackathonId}>
                                     <td className="p-4">
                                         <Typography
                                             variant="small"

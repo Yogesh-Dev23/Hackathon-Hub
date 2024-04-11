@@ -47,7 +47,16 @@ const PanelistShortlist = () => {
     const [ideas, setIdeas] = useState([]);
 
     useEffect(() => {
-        setIdeas(teamsData?.filter((team) => team.status !== "registered"));
+        const newIdeas = teamsData?.filter(
+            (team) => team.status !== "registered"
+        );
+        setIdeas(newIdeas);
+        if (newIdeas?.length > 0) {
+            setTotalPages(Math.floor((newIdeas?.length - 1) / 6 + 1));
+        }
+        if (newIdeas?.length === 0) {
+            setTotalPages(0);
+        }
     }, [teamsData]);
 
     const userData = useSelector(selectUserDetails);
@@ -71,6 +80,8 @@ const PanelistShortlist = () => {
         }
     }, [ideas]);
 
+    const [totalPages, setTotalPages] = useState(0);
+
     const [activePage, setActivePage] = React.useState(1);
 
     const getPaginationItemProps = (index) => ({
@@ -79,7 +90,7 @@ const PanelistShortlist = () => {
     });
 
     const nextPage = () => {
-        if (activePage === 5) return;
+        if (activePage === totalPages) return;
 
         setActivePage(activePage + 1);
     };
@@ -151,56 +162,62 @@ const PanelistShortlist = () => {
                                             </ListItem>
                                         ) : null}
                                         {ideas.length > 8
-                                            ? ideas.slice(7).map((idea) => {
-                                                  //   console.log(idea.name);
-                                                  return (
-                                                      <ListItem
-                                                          key={idea.teamId}
-                                                          onClick={() => {
-                                                              setSelectedIdeaId(
-                                                                  idea.teamId
-                                                              );
-                                                          }}
-                                                          className="flex justify-between"
-                                                      >
-                                                          {idea.ideaTitle}
-                                                          <>
-                                                              {idea.status ===
-                                                              "submitted" ? null : idea.status ===
-                                                                    "selected" ||
-                                                                idea.status ===
-                                                                    "implemented" ? (
-                                                                  <svg
-                                                                      xmlns="http://www.w3.org/2000/svg"
-                                                                      viewBox="0 0 24 24"
-                                                                      fill="currentColor"
-                                                                      className="w-6 h-6 fill-green-400"
-                                                                  >
-                                                                      <path
-                                                                          fillRule="evenodd"
-                                                                          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-                                                                          clipRule="evenodd"
-                                                                      />
-                                                                  </svg>
-                                                              ) : idea.status ===
-                                                                "rejected" ? (
-                                                                  <svg
-                                                                      xmlns="http://www.w3.org/2000/svg"
-                                                                      viewBox="0 0 24 24"
-                                                                      fill="currentColor"
-                                                                      className="w-6 h-6 fill-red-700"
-                                                                  >
-                                                                      <path
-                                                                          fillRule="evenodd"
-                                                                          d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
-                                                                          clipRule="evenodd"
-                                                                      />
-                                                                  </svg>
-                                                              ) : null}
-                                                          </>
-                                                      </ListItem>
-                                                  );
-                                              })
+                                            ? ideas
+                                                  .slice(
+                                                      (activePage - 1) * 6,
+                                                      activePage * 6 ||
+                                                          ideas.length
+                                                  )
+                                                  .map((idea) => {
+                                                      //   console.log(idea.name);
+                                                      return (
+                                                          <ListItem
+                                                              key={idea.teamId}
+                                                              onClick={() => {
+                                                                  setSelectedIdeaId(
+                                                                      idea.teamId
+                                                                  );
+                                                              }}
+                                                              className="flex justify-between"
+                                                          >
+                                                              {idea.ideaTitle}
+                                                              <>
+                                                                  {idea.status ===
+                                                                  "submitted" ? null : idea.status ===
+                                                                        "selected" ||
+                                                                    idea.status ===
+                                                                        "implemented" ? (
+                                                                      <svg
+                                                                          xmlns="http://www.w3.org/2000/svg"
+                                                                          viewBox="0 0 24 24"
+                                                                          fill="currentColor"
+                                                                          className="w-6 h-6 fill-green-400"
+                                                                      >
+                                                                          <path
+                                                                              fillRule="evenodd"
+                                                                              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                                                                              clipRule="evenodd"
+                                                                          />
+                                                                      </svg>
+                                                                  ) : idea.status ===
+                                                                    "rejected" ? (
+                                                                      <svg
+                                                                          xmlns="http://www.w3.org/2000/svg"
+                                                                          viewBox="0 0 24 24"
+                                                                          fill="currentColor"
+                                                                          className="w-6 h-6 fill-red-700"
+                                                                      >
+                                                                          <path
+                                                                              fillRule="evenodd"
+                                                                              d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                                                                              clipRule="evenodd"
+                                                                          />
+                                                                      </svg>
+                                                                  ) : null}
+                                                              </>
+                                                          </ListItem>
+                                                      );
+                                                  })
                                             : ideas.map((idea) => {
                                                   //   console.log(hackathon.name);
                                                   return (
@@ -268,45 +285,38 @@ const PanelistShortlist = () => {
                                     {/* <VerticalBar /> */}
                                 </CardBody>
                                 <CardFooter className="flex items-baseline justify-center pt-2 pb-4">
-                                    <ButtonGroup variant="outlined" size="sm">
-                                        <IconButton onClick={prevPage}>
-                                            <ArrowLeftIcon
-                                                strokeWidth={2}
-                                                className="h-4 w-4"
-                                            />
-                                        </IconButton>
-                                        <IconButton
-                                            {...getPaginationItemProps(1)}
+                                    {totalPages !== 0 && (
+                                        <ButtonGroup
+                                            variant="outlined"
+                                            size="sm"
                                         >
-                                            1
-                                        </IconButton>
-                                        <IconButton
-                                            {...getPaginationItemProps(2)}
-                                        >
-                                            2
-                                        </IconButton>
-                                        <IconButton
-                                            {...getPaginationItemProps(3)}
-                                        >
-                                            3
-                                        </IconButton>
-                                        <IconButton
-                                            {...getPaginationItemProps(4)}
-                                        >
-                                            4
-                                        </IconButton>
-                                        <IconButton
-                                            {...getPaginationItemProps(5)}
-                                        >
-                                            5
-                                        </IconButton>
-                                        <IconButton onClick={nextPage}>
-                                            <ArrowRightIcon
-                                                strokeWidth={2}
-                                                className="h-4 w-4"
-                                            />
-                                        </IconButton>
-                                    </ButtonGroup>
+                                            <IconButton onClick={prevPage}>
+                                                <ArrowLeftIcon
+                                                    strokeWidth={2}
+                                                    className="h-4 w-4"
+                                                />
+                                            </IconButton>
+                                            {Array(totalPages)
+                                                .fill(1)
+                                                .map((el, index) => (
+                                                    <IconButton
+                                                        key={index}
+                                                        {...getPaginationItemProps(
+                                                            index + 1
+                                                        )}
+                                                    >
+                                                        {index + 1}
+                                                    </IconButton>
+                                                ))}
+
+                                            <IconButton onClick={nextPage}>
+                                                <ArrowRightIcon
+                                                    strokeWidth={2}
+                                                    className="h-4 w-4"
+                                                />
+                                            </IconButton>
+                                        </ButtonGroup>
+                                    )}
                                 </CardFooter>
                             </Card>
                             {/* <VerticalBar /> */}
