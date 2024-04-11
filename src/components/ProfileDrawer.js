@@ -29,7 +29,7 @@ const ProfileDrawer = ({ opens, onClose }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        console.log(userData)
+        // console.log(userData)
         setUser(userData);
     }, [userData]);
 

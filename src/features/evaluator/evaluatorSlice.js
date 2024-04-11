@@ -24,7 +24,7 @@ export const fetchEvaluators = createAsyncThunk(
                 "http://localhost:8080/Admin/Evaluator",
                 { headers }
             );
-            console.log(response);
+            // console.log(response);
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
