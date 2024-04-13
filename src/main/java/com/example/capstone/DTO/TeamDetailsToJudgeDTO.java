@@ -1,5 +1,8 @@
 package com.example.capstone.DTO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.capstone.Entity.Status;
 
 public class TeamDetailsToJudgeDTO {
@@ -11,6 +14,7 @@ public class TeamDetailsToJudgeDTO {
 	private String ideaTitle;
 	private String teamName;
 	private Status status;
+	private List<Integer> userIds = new ArrayList<>();
 
 	public TeamDetailsToJudgeDTO() {
 
@@ -27,6 +31,14 @@ public class TeamDetailsToJudgeDTO {
 		this.ideaTitle = ideaTitle;
 		this.teamName = teamName;
 		this.status = status;
+	}
+
+	public List<Integer> getUserIds() {
+		return userIds;
+	}
+
+	public void setUserIds(List<Integer> userIds) {
+		this.userIds = userIds;
 	}
 
 	public String getIdeaBody() {

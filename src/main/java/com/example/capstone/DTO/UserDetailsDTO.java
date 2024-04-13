@@ -1,10 +1,5 @@
 package com.example.capstone.DTO;
 
-import java.util.Collection;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.example.capstone.Entity.Role;
 
 public class UserDetailsDTO {
@@ -14,6 +9,31 @@ public class UserDetailsDTO {
 	private Role role;
 	private boolean isAvailable;
 	private Integer assignedHackathon;
+    private String domain;
+
+	public UserDetailsDTO(Integer userId, String name, String email, Role role, boolean isAvailable,
+			Integer assignedHackathon, String domain) {
+		super();
+		this.userId = userId;
+		this.name = name;
+		this.email = email;
+		this.role = role;
+		this.isAvailable = isAvailable;
+		this.assignedHackathon = assignedHackathon;
+		this.domain = domain;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public void setAssignedHackathon(Integer assignedHackathon) {
+		this.assignedHackathon = assignedHackathon;
+	}
 
 	public boolean isAvailable() {
 		return isAvailable;

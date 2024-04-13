@@ -2,6 +2,7 @@ package com.example.capstone.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +53,8 @@ public class TeamService {
 	public void CreateTeam(int hackathonid, int userid, TeamCreationDTO teamCreationDTO) {
 		if (isDevelopment || checkTimeBound(hackathonid)) {
 			Hackathon hackathon = hackathonService.findHackathon(hackathonid);
+			if(!hackathon.isCompleted())
+			{
 			Team team = new Team();
 			team.setName(teamCreationDTO.getName());
 			team.setStatus(Status.registered);
@@ -88,7 +91,13 @@ public class TeamService {
 			{
 				throw new ResourceNotFoundException("Panelist not assigned to the hackathon");
 			}
+			}
+			else
+			{
+				throw new UnauthorizedException("Hackathon is completed");
+			}
 		}
+			
 	}
 
 	public boolean checkTimeBound(int hackathonId) {
@@ -118,7 +127,9 @@ public class TeamService {
 			{
 			List<Participant> participants = user.getParticipants();
 			if (participants != null && !participants.isEmpty()) {
+				boolean flag = true;
 				for (Participant participant : participants) {
+					//System.out.println(hackathonId+"-----------------------------------------"+participant.getTeam().getHackathon().getHackathonId());
 					if(participant.getTeam().getHackathon().getHackathonId()==hackathonId)
 					{
 					if (participant.isLeader()) {
@@ -133,11 +144,12 @@ public class TeamService {
 					} else {
 						throw new UnauthorizedException("Sorry, your not a leader to add Idea ");
 					}
+					flag=false;
 					}
-					else
-					{
+					
+				}
+				if(flag == true) {
 						throw new ResourceNotFoundException("Team not found");
-					}
 				}
 			}
 			}
@@ -147,7 +159,17 @@ public class TeamService {
 			}
 		}
 	}
-
+	public boolean checkTimeBoundForPanelist(int hackathonId) {
+		Hackathon hackathon = hackathonService.findHackathon(hackathonId);
+		LocalDateTime currentTime = LocalDateTime.now();
+		if (currentTime.isBefore(hackathon.getIdeaSubmissionDeadline())) {
+			throw new UnauthorizedException("Team shortlisting not started is not Started");
+		} else if (currentTime.isAfter(hackathon.getShortListDeadLine())) {
+			throw new UnauthorizedException("Team shortlisting closed");
+		} else {
+			return true;
+		}
+	}
 	// Reject a team by setting status of team as rejected.
 	// This method sets the team's status to "rejected" and sends an email to all
 	// team members
@@ -155,23 +177,25 @@ public class TeamService {
 	@Transactional
 	public void rejectTeam(int id) {
 		Team team = teamRepository.findById(id).get();
+		if(isDevelopment || checkTimeBoundForPanelist(team.getHackathon().getHackathonId()))
+		{
 		if (team != null) {
 			for (Participant participant : team.getParticipants()) {
 				User user = participant.getUser();
 				user.setAvailable(true);
-				String subject = "Update on Your Submission";
+				user.setAssignedHackathon(-1);
+				String subject = "Update on Your Idea Submission";
 				String body = "Dear Team,\r\n" + "\r\n"
-						+ "After careful consideration and review, we regret to inform you that your recent submission did not advance to the next phase.\r\n"
+						+ "After careful consideration and review, we regret to inform you that your recent idea submission for hackathon "+team.getHackathon().getName()+" did not advance to the next phase.\r\n"
 						+ "\r\n"
-						+ "We appreciate the effort and creativity you put into your proposal. We encourage you to seek feedback and consider this experience as an opportunity\r\n"
-						+ "\r\n"
-						+ "for growth and improvement. Please do not be disheartened, as there will be more opportunities to showcase your innovative ideas in the future.\r\n"
+						+ "We appreciate the effort and creativity you put into your proposal."+" Please do not be disheartened, as there will be more opportunities to showcase your innovative ideas in the future.\r\n"
 						+ "\r\n" + "Thank you for your contribution and continued dedication.\r\n" + "\r\n"
-						+ "Best regards,\r\n" + "\r\n" + "Team HackerHub";
+						+ "Best regards,\r\n" + "Team HackerHub";
 				mailService.sendEmail(user.getEmail(), body, subject);
 			}
 			team.setStatus(Status.rejected);
 			teamRepository.save(team);
+		}
 		}
 	}
 
@@ -182,18 +206,32 @@ public class TeamService {
 	// If the team is not found, the method throws a TeamNotFoundException.
 	public void selectTeamForNextStep(int teamId) {
 		Team team = teamRepository.findById(teamId).get();
+		if(isDevelopment || checkTimeBoundForPanelist(team.getHackathon().getHackathonId()))
+		{
 		if (team != null) {
 			for (Participant participant : team.getParticipants()) {
 				String email = participant.getUser().getEmail();
 				String subject = "Congratulations! You've Advanced to the Next Step";
-				String body = "Dear Team,\r\n" + "\r\n"
-						+ "We’re thrilled to announce that you have been selected to move forward to the next step. Your dedication and hard work have truly set you apart.\r\n"
-						+ "\r\n"
-						+ "Details on the upcoming phase, including expectations and timelines, will be shared soon. In the meantime, please ensure you're prepared for an increased level of involvement.\r\n"
-						+ "\r\n"
-						+ "Should you have any questions or need further clarification, feel free to reach out.\r\n"
-						+ "\r\n" + "Congratulations once again on your achievement!\r\n" + "\r\n" + "Best regards,\r\n"
-						+ "\r\n" + "Team HackerHub";
+				String body = "Dear Team,\r\n"
+						+ " \r\n"
+						+ "I hope this email finds you well. First and foremost, we would like to extend our sincerest gratitude for your participation in our Hackathon "+team.getHackathon().getName()+" and for submitting your innovative idea. We are thrilled to inform you that your idea submission has caught the attention of our review panel and has been selected for the next phase of the competition.\r\n"
+						+ " \r\n"
+						+ "Your idea shows great potential, and we are excited to see how it can be developed further. As part of the next steps, we kindly ask you to start working on the implementation phase of your project. This is your opportunity to bring your idea to life and showcase its feasibility and the impact it can make.\r\n"
+						+ " \r\n"
+						+ "Submission Guidelines for Implementation Phase:\r\n"
+						+ " \r\n"
+						+ "Preparation: Develop your idea into a tangible project. This may involve coding, creating prototypes, or producing detailed plans that highlight how your idea can be realized.\r\n"
+						+ "Submission Format: Please submit your implementation in the form of repository links (e.g., GitHub, Bitbucket) or drive links (e.g., Google Drive, Dropbox) where your project files and documentation can be accessed.\r\n"
+						+ "Documentation: Ensure your submission includes a README file or equivalent documentation that explains your project, the problem it solves, how it works, and any setup or usage instructions.\r\n"
+						+ "Deadline: "+formatDate(team.getHackathon().getImplementationSubmissionDeadLine())+". It's important that you adhere to this timeline to remain eligible for the final evaluation.\r\n"
+						+ "Please login to the HackerHub website to submit your project implementation.\r\n"
+						+ " \r\n"
+						+ "We understand that developing a project for implementation can be challenging, but we encourage you to utilize this opportunity to innovate and impress. Should you have any questions or require further clarification, please do not hesitate to reach out to us at Contact Us on HackerHub website.\r\n"
+						+ " \r\n"
+						+ "We look forward to seeing your idea come to fruition and wish you the best of luck as you embark on this exciting phase of the Hackathon.\r\n"
+						+ " \r\n"
+						+ "Best regards,\r\n"
+						+ "Team HackerHub.";
 				mailService.sendEmail(email, body, subject);
 			}
 		} else {
@@ -202,7 +240,20 @@ public class TeamService {
 		team.setStatus(Status.selected);
 		teamRepository.save(team);
 	}
-
+	}
+	public String formatDate(LocalDateTime dateTime) {
+		int year = dateTime.getYear();
+		int month = dateTime.getMonthValue();
+		int day = dateTime.getDayOfMonth();
+		int hour = dateTime.getHour();
+		int minute = dateTime.getMinute();
+		int second = dateTime.getSecond();
+ 
+		String secondString = (second < 10) ? "0" + second : String.valueOf(second);
+		String minuteString = (minute < 10) ? "0" + minute : String.valueOf(minute);
+ 
+		return day + "/" + month + "/" + year + "  " + hour + ":" + minuteString + ":" + secondString;
+	}
 	// Get team details by its ID.
 	public Team getTeam(int id) {
 		return teamRepository.findById(id).get();
@@ -224,39 +275,49 @@ public class TeamService {
 	public String FileSubmission(int hackathonId, int userId, IdeaDetailsRequestDTO requestBody) {
 		User user = userService.getUser(userId);
 		List<Participant> participants = user.getParticipants();
-		Hackathon hackathon=hackathonService.findHackathon(hackathonId);
-		LocalDateTime currentTime=LocalDateTime.now();
-		if(isDevelopment || currentTime.isBefore(hackathon.getImplementationSubmissionDeadLine()) && currentTime.isAfter(hackathon.getShortListDeadLine()))
-		{
-		for (Participant participant : participants) {
-			if (participant.isLeader() && participant.getTeam().getHackathon().getHackathonId().equals(hackathonId)) {
-				Team team = participant.getTeam();
-				if (team.getStatus().equals(Status.selected)) {
-					team.setIdeaRepo(requestBody.getIdeaRepo());
-					team.setIdeaFiles(requestBody.getIdeaFiles());
-					team.setStatus(Status.implemented);
-					teamRepository.save(team);
-					return "Your idea files have been submitted.";
-				} else  if(team.getStatus().equals(Status.rejected)){
-					throw new UnauthorizedException("Your team is not selected, Better luck next time champ!");
+		Hackathon hackathon = hackathonService.findHackathon(hackathonId);
+		LocalDateTime currentTime = LocalDateTime.now();
+		if (isDevelopment || currentTime.isBefore(hackathon.getImplementationSubmissionDeadLine())
+				&& currentTime.isAfter(hackathon.getShortListDeadLine())) {
+			boolean flag = true;
+			for (Participant participant : participants) {
+ 
+				if (participant.isLeader()
+						&& participant.getTeam().getHackathon().getHackathonId().equals(hackathonId)) {
+					Team team = participant.getTeam();
+					if (team.getStatus().equals(Status.selected)) {
+						team.setIdeaRepo(requestBody.getIdeaRepo());
+						team.setIdeaFiles(requestBody.getIdeaFiles());
+						team.setStatus(Status.implemented);
+						teamRepository.save(team);
+						flag = false;
+						return "Your idea files have been submitted.";
+					} else if (team.getStatus().equals(Status.rejected)) {
+						throw new UnauthorizedException("Your team is not selected, Better luck next time champ!");
+					} else if (team.getStatus().equals(Status.submitted)) {
+						throw new UnauthorizedException("You are already submitted");
+					}
 				}
-				else if(team.getStatus().equals(Status.submitted))
-				{
-					throw new UnauthorizedException("You are already submitted");
-				}
-			} else {
-				throw new UnauthorizedException("Oops, You are not a leader!");
 			}
-		}
-		return "Idea files submitted successfully";
-		}
-		else if(currentTime.isBefore(hackathon.getShortListDeadLine()))
-		{
+			if (flag == true) {
+ 
+				throw new UnauthorizedException("Oops, You are not a leader!");
+ 
+			}
+			return "Idea files submitted successfully";
+		} else if (currentTime.isBefore(hackathon.getShortListDeadLine())) {
 			throw new UnauthorizedException("Implementation submission not started");
-		}
-		else
-		{
+		} else {
 			throw new UnauthorizedException("Implementation submission Ended");
 		}
+	}
+	public String FindTeamNameById(int id)
+	{
+		Optional<Team> team=teamRepository.findById(id);
+		if(team.isPresent())
+		{
+			return team.get().getName();
+		}
+		return null;
 	}
 }

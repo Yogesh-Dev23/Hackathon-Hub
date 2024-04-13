@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -23,9 +25,18 @@ public class Hackathon {
 	private LocalDateTime implementationSubmissionDeadLine;
 	private LocalDateTime reviewStartTime;
 	private LocalDateTime reviewEndTime;
+	
+	@Lob
+	@Column(length=3000)
 	private String description;
+	@Lob
+	@Column(length=3000)
 	private String prizes;
+	@Lob
+	@Column(length=3000)
 	private String rules;
+	@Lob
+	@Column(length=3000)
 	private String judging_criteria;
 	private String firstTeamId;
 	private String secondTeamId;

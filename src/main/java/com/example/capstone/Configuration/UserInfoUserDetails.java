@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.capstone.Entity.User;
 
+@SuppressWarnings("serial")
 public class UserInfoUserDetails implements UserDetails {
 
 	private String name;

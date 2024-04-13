@@ -11,16 +11,25 @@ public class TeamDetailsDTO {
 	private String ideaTitle;
 	private String ideaRepo;
 	private String ideaFiles;
+	private String ideaBody;
 	private Status status;
 	private String ideaDomain;
 	private Float consolidatedRating;
 	private int hackathonId;
-	private List<TeamUserDetailsDTO> teamUserDetailsDTOs;
-	private List<String> feedBacks;
-
+	private List<TeamUserDetailsDTO> teamUserDetailsDTOs=new ArrayList<>();
+	private List<String> feedBacks=new ArrayList<>();
+  
 	public TeamDetailsDTO() {
 		teamUserDetailsDTOs = new ArrayList<>();
 		consolidatedRating = null;
+	}
+    
+	public String getIdeaBody() {
+		return ideaBody;
+	}
+
+	public void setIdeaBody(String ideaBody) {
+		this.ideaBody = ideaBody;
 	}
 
 	public int getTeamId() {

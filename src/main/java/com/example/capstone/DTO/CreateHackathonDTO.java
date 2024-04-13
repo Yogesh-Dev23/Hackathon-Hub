@@ -4,18 +4,52 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class CreateHackathonDTO {
+	@NotBlank(message = "name should not be blank")
+	@NotNull(message = "name should not be null")
 	private String name;
+
+	@NotBlank(message = "theme should not be blank")
+	@NotNull(message = "theme should not be null")
 	private String theme;
+
+	@NotNull(message = "startdate should not be null")
 	private LocalDateTime startDate;
+
+	@NotNull(message = "ideaSubmissionDeadLine should not be null")
 	private LocalDateTime ideaSubmissionDeadLine;
+    
+	@NotNull(message = "shortListDeadLine should not be null")
 	private LocalDateTime shortListDeadLine;
+     
+	@NotNull(message="implementationDeadLine should not be null")
 	private LocalDateTime implementationDeadLine;
+    
+	@NotNull(message="reviewStartTime should not be null")
 	private LocalDateTime reviewStartTime;
+
 	private LocalDateTime reviewEndTime;
+
+	@NotBlank(message = "description should not be blank")
+	@NotNull(message = "description should not be null")
 	private String description;
+
+	@NotBlank(message = "guidelines should not be blank")
+	@NotNull(message = "guidelines should not be null")
 	private String guidelines;
+
+	@NotBlank(message = "prizes should not be blank")
+	@NotNull(message = "prizes should not be null")
 	private String prizes;
+
+	@NotBlank(message = "judgingCriteria should not be blank")
+	@NotNull(message = "judgingCriteria should not be null")
 	private String judgingCriteria;
 
 	public String getDescription() {

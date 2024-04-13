@@ -30,6 +30,9 @@ databaseChangeLog:
               - column:
                   name: assigned_hackathon
                   type: bigint
+              - column:
+                 name: of_registered
+                 type: varchar(50)
       context: "deploy"
       runOnChange: true
   - changeSet:
@@ -41,7 +44,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: email
-                  value: singamsettigokul@gmail.com
+                  value: hackerhubinc@gmail.com
               - column:
                   name: password
                   value: $2a$10$GwQQpYBy9xSh.1D0xskhAucr8GI0UGbwWtwVetDermk2w7zeFr9xm
@@ -53,9 +56,12 @@ databaseChangeLog:
                   valueBoolean: False
               - column:
                   name: name
-                  value: Gokul
+                  value: HackerHub
               - column:
                   name: assigned_hackathon
                   value: -1
+              - column:
+                 name: of_registered
+                 value: normal
       context: "deploy"
       runOnChange: true

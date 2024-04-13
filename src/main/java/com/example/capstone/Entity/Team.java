@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -29,7 +30,8 @@ public class Team {
 	private String name;
 	@Column(nullable = true)
 	private String ideaTitle;
-	@Column(nullable = true)
+	@Lob
+	@Column(nullable = true, length = 3000)
 	private String ideaBody;
 	@Column(nullable = true)
 	private String ideaRepo;

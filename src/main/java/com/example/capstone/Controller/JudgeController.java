@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.capstone.DTO.MessageResponse;
 import com.example.capstone.DTO.ReviewDTO;
 import com.example.capstone.DTO.TeamDetailsToJudgeDTO;
+import com.example.capstone.Exceptions.BadRequestException;
 import com.example.capstone.Service.JudgeService;
+
+import jakarta.validation.Valid;
 
 //Controller for Judge related API endpoints
 @RestController
@@ -34,7 +37,11 @@ public class JudgeController {
 	 * @return a ResponseEntity indicating the result of the operation.
 	 */
 	@PostMapping("review/{teamId}")
-	public ResponseEntity<MessageResponse> addReview(@PathVariable int teamId, @RequestBody ReviewDTO reviewDTO) {
+	public ResponseEntity<MessageResponse> addReview(@PathVariable int teamId,
+			@RequestBody(required = false) @Valid ReviewDTO reviewDTO) {
+		if (reviewDTO == null) {
+			throw new BadRequestException("Requestbody should not be null");
+		}
 		judgeService.addReview(teamId, reviewDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Review added successfully"));
 	}

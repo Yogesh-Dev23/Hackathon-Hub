@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,11 @@ import com.example.capstone.Entity.Panelist;
 import com.example.capstone.Entity.Participant;
 import com.example.capstone.Entity.Review;
 import com.example.capstone.Entity.Role;
+import com.example.capstone.Entity.Status;
 import com.example.capstone.Entity.Team;
 import com.example.capstone.Entity.User;
 import com.example.capstone.Exceptions.HackathonNotExistsException;
+import com.example.capstone.Exceptions.UnauthorizedException;
 import com.example.capstone.Exceptions.UserNotFoundException;
 import com.example.capstone.Repository.HackathonRepository;
 
@@ -41,7 +44,11 @@ public class HackathonService {
 	private JudgeService judgeService;
 	@Autowired
 	private MailService mailService;
-
+	@Value("${custom.feature.isDevelopment}")
+	private boolean isDevelopment;
+	
+	@Autowired
+	private TeamService teamService;
 	/**
 	 * Method to create a new hackathon.
 	 * 
@@ -73,6 +80,12 @@ public class HackathonService {
 	 */
 	public List<HackathonDTO> getAllHackathons() {
 		List<HackathonDTO> hackathonDTOs = hackathonRepository.findHackathonsWithSelectedAttributes();
+		for(HackathonDTO dto:hackathonDTOs)
+		{
+			dto.setFirstTeamName(dto.getFirstTeamName()== null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getFirstTeamName())));
+			dto.setSecondTeamName( dto.getSecondTeamName() == null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getSecondTeamName())));
+			dto.setThirdTeamName( dto.getThirdTeamName()== null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getThirdTeamName())));
+		}
 		return hackathonDTOs;
 	}
 
@@ -82,15 +95,20 @@ public class HackathonService {
 	 * @param dateTime LocalDateTime to format
 	 * @return Formatted date and time string
 	 */
+	
 	public String formatDate(LocalDateTime dateTime) {
-		int year = dateTime.getYear();
-		int month = dateTime.getMonthValue();
-		int day = dateTime.getDayOfMonth();
-		int hour = dateTime.getHour();
-		int minute = dateTime.getMinute();
-		int second = dateTime.getSecond();
-		return day + "-" + month + "-" + year + "  " + hour + ":" + minute + ":" + second;
-	}
+			int year = dateTime.getYear();
+			int month = dateTime.getMonthValue();
+			int day = dateTime.getDayOfMonth();
+			int hour = dateTime.getHour();
+			int minute = dateTime.getMinute();
+			int second = dateTime.getSecond();
+	 
+			String secondString = (second < 10) ? "0" + second : String.valueOf(second);
+			String minuteString = (minute < 10) ? "0" + minute : String.valueOf(minute);
+	 
+			return day + "/" + month + "/" + year + "  " + hour + ":" + minuteString + ":" + secondString;
+		}
 
 	/**
 	 * Adds evaluators to a hackathon.
@@ -111,14 +129,14 @@ public class HackathonService {
 					body = "Dear Evaluator,\r\n" + "\r\n" + "On behalf of the organizing team of "
 							+ hackathon.get().getName()
 							+ ", I am delighted to extend an invitation to you to serve as a " + user.getRole()
-							+ " our upcoming event.\r\n" + "\r\n" + "Event Details:\r\n" + "\r\n" + "Date: " + "\r\n"
-							+ "Time: " + formatDate(hackathon.get().getStartDate()) + "\r\n" + " %s " + "\r\n" + " %s "
+							+ " to our upcoming event.\r\n" + "\r\n" + "Event Details:\r\n" + "\r\n" + "Timmings: " + "\r\n"
+							+ "EventStartDate: " + formatDate(hackathon.get().getStartDate()) + "\r\n" + "%s " + "\r\n" + "%s "
 							+ "\r\n"
-							+ "As a , your expertise and insights will play a crucial role in evaluating the projects submitted by our participants. Your valuable feedback and assessment will help recognize and reward innovation, creativity, and technical excellence.\r\n"
-							+ "\r\n" + "We look forward to hearing from you soon and working together to make"
+							+ "\nAs a "+user.getRole()+ ", your expertise and insights will play a crucial role in evaluating the projects submitted by our participants. Your valuable feedback and assessment will help recognize and reward innovation, creativity, and technical excellence.\r\n"
+							+ "\r\n" + "We look forward to hearing from you soon and working together to make "
 							+ hackathon.get().getName() + " a memorable and impactful event.\r\n" + "\r\n"
 							+ "Thank you for considering our invitation, and we eagerly await your response.\r\n"
-							+ "\r\n" + "Best regards,\r\n" + "\r\n" + "Team HackerHub";
+							+ "\r\n" + "Best regards,"+ "\r\n" + "Team HackerHub";
 					user.setAvailable(false);
 					user.setAssignedHackathon(hackathon.get().getHackathonId());
 					reciever = user.getEmail();
@@ -127,15 +145,15 @@ public class HackathonService {
 						hackathon.get().getPanelists().add(panelist);
 						user.getPanelists().add(panelist);
 						body = String.format(body,
-								"shortlisting start time:" + formatDate(hackathon.get().getIdeaSubmissionDeadline()),
-								"shortlisting end time:" + formatDate(hackathon.get().getShortListDeadLine()));
+								"Shortlisting start time: " + formatDate(hackathon.get().getIdeaSubmissionDeadline()),
+								"Shortlisting end time: " + formatDate(hackathon.get().getShortListDeadLine()));
 					} else if (user.getRole().equals(Role.judge)) {
 						Judge judge = judgeService.createJudge(user, hackathon.get());
 						hackathon.get().getJudges().add(judge);
 						user.getJudges().add(judge);
 						body = String.format(body,
-								"reviewing start time:" + formatDate(hackathon.get().getReviewStartTime()),
-								"review end time:" + formatDate(hackathon.get().getReviewEndTime()));
+								"Reviewing start time: " + formatDate(hackathon.get().getReviewStartTime()),
+								"Review end time: " + formatDate(hackathon.get().getReviewEndTime()));
 					}
 					mailService.sendEmail(reciever, body, subject);
 				}
@@ -211,10 +229,24 @@ public class HackathonService {
 	 */
 	public void endHackathon(int hackathonId) {
 		Optional<Hackathon> hackathon = hackathonRepository.findById(hackathonId);
+		LocalDateTime currentTime=LocalDateTime.now();
+		if(isDevelopment || currentTime.isAfter(hackathon.get().getReviewEndTime()))
+		{
 		List<Team> teams = hackathon.get().getTeams();
 		List<Pair<Integer, Float>> scores = new ArrayList<>();
 		for (Team team : teams) {
-			scores.add(Pair.of(team.getTeamId(), getConsolidatedRating(team)));
+			if(team.getConsolidatedRating()!=null)
+			{
+		       scores.add(Pair.of(team.getTeamId(), getConsolidatedRating(team)));
+			}
+			else
+			{
+				for (Participant participant : team.getParticipants()) {
+					participant.getUser().setAvailable(true);
+					participant.getUser().setAssignedHackathon(-1);
+				}	
+			}
+			team.setStatus(Status.reviewed);
 		}
 		for (Judge judge : hackathon.get().getJudges()) {
 			judge.getUser().setAvailable(true);
@@ -229,7 +261,14 @@ public class HackathonService {
 		hackathon.get().setFirstTeamId(scores.size() >= 1 ? String.valueOf(scores.get(0).getFirst()) : null);
 		hackathon.get().setSecondTeamId(scores.size() >= 2 ? String.valueOf(scores.get(1).getFirst()) : null);
 		hackathon.get().setThirdTeamId(scores.size() >= 3 ? String.valueOf(scores.get(2).getFirst()) : null);
+		hackathon.get().setCompleted(true);
 		updateHackathon(hackathon.get());
+	
+	}
+	else
+	{
+		throw new UnauthorizedException("Idea implementation reviewing is not ended");
 	}
 
+}
 }

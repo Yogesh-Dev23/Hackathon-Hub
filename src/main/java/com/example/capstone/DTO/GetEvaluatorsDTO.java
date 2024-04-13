@@ -10,9 +10,10 @@ public class GetEvaluatorsDTO {
 	private Enum<Role> role;
 	private boolean isAvailable;
 	private Integer assignedHackathon;
+	private String domain;
 
 	public GetEvaluatorsDTO(int userId, String name, String email, Enum<Role> role, boolean isAvailable,
-			Integer assignedHackathon) {
+			Integer assignedHackathon, String domain) {
 		super();
 		this.userId = userId;
 		this.name = name;
@@ -20,6 +21,15 @@ public class GetEvaluatorsDTO {
 		this.role = role;
 		this.isAvailable = isAvailable;
 		this.assignedHackathon = assignedHackathon;
+		this.domain = domain;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
 	public boolean isAvailable() {

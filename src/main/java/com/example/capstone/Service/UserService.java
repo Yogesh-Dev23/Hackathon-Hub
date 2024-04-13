@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import com.example.capstone.DTO.RegisterEvaluatorDTO;
 import com.example.capstone.DTO.TeamDetailsDTO;
 import com.example.capstone.DTO.TeamUserDetailsDTO;
@@ -22,6 +23,7 @@ import com.example.capstone.Entity.Participant;
 import com.example.capstone.Entity.Review;
 import com.example.capstone.Entity.Role;
 import com.example.capstone.Entity.Team;
+import com.example.capstone.Entity.TypeOfRegistered;
 import com.example.capstone.Entity.User;
 import com.example.capstone.Exceptions.FailedToSendEmailException;
 import com.example.capstone.Exceptions.InvalidEmailException;
@@ -31,8 +33,6 @@ import com.example.capstone.Exceptions.UnauthorizedException;
 import com.example.capstone.Exceptions.UserAlreadyExistsException;
 import com.example.capstone.Exceptions.UserNotFoundException;
 import com.example.capstone.Repository.UserRepository;
-
-import jakarta.persistence.Tuple;
 
 @Service
 public class UserService {
@@ -109,6 +109,7 @@ public class UserService {
 			user.setRole(Role.participant);
 			user.setAvailable(true);
 			user.setAssignedHackathon(-1);
+			user.setOfRegistered(TypeOfRegistered.normal);
 			userRepository.saveAndFlush(user); // Save user to database
 		}
 	}
@@ -170,13 +171,15 @@ public class UserService {
 			evaluator.setName(addEvaluatorDTO.getName());
 			evaluator.setRole(addEvaluatorDTO.getRole());
 			evaluator.setAssignedHackathon(-1);
+			evaluator.setDomain(addEvaluatorDTO.getDomain());
+			evaluator.setOfRegistered(TypeOfRegistered.normal);
 			// Generate a random password
 			String password = passwordGenerationService.generatePassword();
 			// Hash the password
 
 			evaluator.setPassword(passwordEncoder.encode(password));
 			// Compose email
-			String subject = "Welcome to – Your Account Details";
+			String subject = "Welcome to HackerHub – Your Account Details";
 			String body = "Dear Evaluator,\r\n" + "\r\n" + "We are delighted to welcome you to HackerHub as a "
 					+ addEvaluatorDTO.getRole()
 					+ ". Your account has been successfully created, and you are now ready to access our platform.\r\n"
@@ -184,7 +187,7 @@ public class UserService {
 					+ addEvaluatorDTO.getEmail() + "\r\n" + "\r\n" + "Password: " + password + "\r\n" + "\r\n"
 					+ "Please use the provided credentials to log in to your account." + "\r\n"
 					+ "We appreciate your participation and look forward to your valuable contributions to HackerHub.\r\n"
-					+ "\r\n" + "Best regards,\r\n" + "\r\n" + "Team HackerHub";
+					+ "\r\n\r\n" + "Best regards," + "\r\n" + "Team HackerHub";
 			// Send email with login credentials
 			if (mailService.sendEmail(addEvaluatorDTO.getEmail(), body, subject)) {
 				// Save the evaluator to the database
@@ -206,26 +209,17 @@ public class UserService {
 		List<User> users = new ArrayList<>();
 		for (EvaluatorDTO e : evaluators) {
 			Optional<User> user = userRepository.findById(e.getUserId());
-			if(user.isPresent())
-			{
-				if(user.get().isAvailable())
-				{
-				    if(user.get().getRole().equals(Role.panelist) || user.get().getRole().equals(Role.judge))
-				    {
-				    	users.add(user.get());
-				    }
-				    else
-				    {
-				    	throw new UnauthorizedException(user.get().getName()+" is not panelist or judge to serve");
-				    }    	
+			if (user.isPresent()) {
+				if (user.get().isAvailable()) {
+					if (user.get().getRole().equals(Role.panelist) || user.get().getRole().equals(Role.judge)) {
+						users.add(user.get());
+					} else {
+						throw new UnauthorizedException(user.get().getName() + " is not panelist or judge to serve");
+					}
+				} else {
+					throw new ResourceNotFoundException(user.get().getName() + " is not available to serve");
 				}
-				else
-				{
-					throw new ResourceNotFoundException(user.get().getName()+" is not available to serve");
-				}
-			}
-			else
-			{
+			} else {
 				throw new UserNotFoundException("User is not found");
 			}
 		}
@@ -263,13 +257,7 @@ public class UserService {
 	 * @return The UserDetailsDTO containing user details
 	 */
 	public UserDetailsDTO returnUserDetails(int id) {
-		Tuple t = userRepository.findUserById(id);
-		UserDetailsDTO user = new UserDetailsDTO();
-		user.setUserId((int) t.get(0));
-		user.setName((String) t.get(1));
-		user.setEmail((String) t.get(2));
-		user.setRole((Role) t.get(3));
-		return user;
+		return userRepository.findUserById(id);
 	}
 
 	/**
@@ -322,7 +310,6 @@ public class UserService {
 	 * @throws UserNotFoundException      if the user is not found
 	 */
 	public User findUserById(int id) {
-		System.out.println("----------------" + id);
 		Optional<User> user = userRepository.findById(id);
 		if (user.isPresent()) {
 			if (!user.get().isAvailable()) {
@@ -410,7 +397,6 @@ public class UserService {
 
 	public List<TeamDetailsDTO> getTeamDetails(int userId) {
 		User user = userRepository.findById(userId).orElse(null);
-
 		if (user != null) {
 			List<TeamDetailsDTO> teamDetailsDTOs = user.getParticipants().stream().map(participant -> {
 				TeamDetailsDTO teamDetailsDTO = new TeamDetailsDTO();
@@ -423,6 +409,7 @@ public class UserService {
 				teamDetailsDTO.setIdeaTitle(team.getIdeaTitle());
 				teamDetailsDTO.setStatus(team.getStatus());
 				teamDetailsDTO.setName(team.getName());
+				teamDetailsDTO.setIdeaBody(team.getIdeaBody());
 				teamDetailsDTO.setHackathonId(team.getHackathon().getHackathonId());
 				team.getReviews().stream().map(Review::getFeedBack)
 						.forEach(feedback -> teamDetailsDTO.getFeedBacks().add(feedback));
@@ -446,6 +433,10 @@ public class UserService {
 
 	public UserDetailsDTO findUserByMail(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
+		if(user.get().getOfRegistered().equals(TypeOfRegistered.SSO))
+		{
+			throw new ResourceNotFoundException("User not found");
+		}
 		UserDetailsDTO dto = new UserDetailsDTO();
 		dto.setEmail(user.get().getEmail());
 		dto.setName(user.get().getName());
@@ -454,5 +445,38 @@ public class UserService {
 		dto.setUserId(user.get().getUserId());
 		dto.setAssignedHackathon(user.get().getAssignedHackathon());
 		return dto;
+	}
+
+	public UserDetailsDTO findUserByMailSSO(String email) {
+		Optional<User> user = userRepository.findByEmail(email);
+		if (user.isEmpty()) {
+			
+			return null;
+		}
+		if(user.get().getOfRegistered().equals(TypeOfRegistered.normal))
+		{
+			throw new ResourceNotFoundException("User not found");
+		}
+		UserDetailsDTO dto = new UserDetailsDTO();
+		dto.setEmail(user.get().getEmail());
+		dto.setName(user.get().getName());
+		dto.setAvailable(user.get().isAvailable());
+		dto.setRole(user.get().getRole());
+		dto.setUserId(user.get().getUserId());
+		dto.setAssignedHackathon(user.get().getAssignedHackathon());
+		return dto;
+	}
+
+	public void createUserSSO(String email, String name) {
+		User user = new User();
+		user.setEmail(email);
+		user.setName(name);
+		user.setAvailable(true);
+		user.setAssignedHackathon(-1);
+		user.setDomain(null);
+		user.setPassword(null);
+		user.setRole(Role.participant);
+		user.setOfRegistered(TypeOfRegistered.SSO);
+		userRepository.saveAndFlush(user);
 	}
 }

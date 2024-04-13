@@ -28,8 +28,21 @@ public class User {
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
+    
+	private String domain;
+	
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 
 	private boolean isAvailable;
+	
+	@Enumerated(EnumType.STRING)
+	private TypeOfRegistered ofRegistered;
 
 	private Integer assignedHackathon;
 
@@ -41,7 +54,10 @@ public class User {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Judge> judges;
-
+    public User()
+    {
+    	
+    }
 	public Integer getUserId() {
 		return userId;
 	}
@@ -125,5 +141,14 @@ public class User {
 	public void setParticipants(List<Participant> participants) {
 		this.participants = participants;
 	}
+
+	public TypeOfRegistered getOfRegistered() {
+		return ofRegistered;
+	}
+
+	public void setOfRegistered(TypeOfRegistered ofRegistered) {
+		this.ofRegistered = ofRegistered;
+	}
+	
 
 }

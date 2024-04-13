@@ -1,6 +1,7 @@
 package com.example.capstone.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,11 @@ import com.example.capstone.DTO.ReviewDTO;
 import com.example.capstone.DTO.TeamDetailsToJudgeDTO;
 import com.example.capstone.Entity.Hackathon;
 import com.example.capstone.Entity.Judge;
+import com.example.capstone.Entity.Review;
+import com.example.capstone.Entity.Status;
+import com.example.capstone.Entity.Team;
 import com.example.capstone.Entity.User;
+import com.example.capstone.Exceptions.ResourceNotFoundException;
 import com.example.capstone.Exceptions.UnauthorizedException;
 import com.example.capstone.Repository.JudgeRepository;
 
@@ -78,11 +83,37 @@ public class JudgeService {
 	 *         containing team details.
 	 */
 	public List<TeamDetailsToJudgeDTO> getSelectedTeamsDetails(int hackathonId) {
+
 		Hackathon hackathon = hackathonService.findHackathon(hackathonId);
 		LocalDateTime currentTime = LocalDateTime.now();
 		if (isDevelopment || currentTime.isAfter(hackathon.getReviewStartTime())
 				&& currentTime.isBefore(hackathon.getReviewEndTime())) {
-			return judgeRepository.findSelectedTeamsDetailsByHackathonId(hackathonId);
+			List<Team> teams = judgeRepository.findTeams(hackathonId);
+			List<TeamDetailsToJudgeDTO> detailsToJudgeDTOs = new ArrayList<>();
+			for (Team team : teams) {
+				if (team.getStatus().equals(Status.implemented)) {
+
+					TeamDetailsToJudgeDTO teamDetailsToJudgeDTO = new TeamDetailsToJudgeDTO();
+					teamDetailsToJudgeDTO.setTeamName(team.getName());
+					teamDetailsToJudgeDTO.setIdeaBody(team.getIdeaBody());
+					teamDetailsToJudgeDTO.setIdeaDomain(team.getIdeaDomain());
+					teamDetailsToJudgeDTO.setIdeaFiles(team.getIdeaFiles());
+					teamDetailsToJudgeDTO.setIdeaRepo(team.getIdeaRepo());
+					teamDetailsToJudgeDTO.setIdeaTitle(team.getIdeaTitle());
+					teamDetailsToJudgeDTO.setTeamId(team.getTeamId());
+					teamDetailsToJudgeDTO.setStatus(team.getStatus());
+					for (Review review : team.getReviews()) {
+						teamDetailsToJudgeDTO.getUserIds().add(review.getUserId());
+					}
+					detailsToJudgeDTOs.add(teamDetailsToJudgeDTO);
+				}
+			}
+
+			if (detailsToJudgeDTOs.size() > 0) {
+				return detailsToJudgeDTOs;
+			} else {
+				throw new ResourceNotFoundException("No team implemented the idea");
+			}
 		} else if (currentTime.isAfter(hackathon.getReviewEndTime())) {
 			throw new UnauthorizedException("Reviewing has been ended");
 		} else {

@@ -14,7 +14,10 @@ import com.example.capstone.DTO.AddIdeaDTO;
 import com.example.capstone.DTO.IdeaDetailsRequestDTO;
 import com.example.capstone.DTO.MessageResponse;
 import com.example.capstone.DTO.TeamCreationDTO;
+import com.example.capstone.Exceptions.BadRequestException;
 import com.example.capstone.Service.TeamService;
+
+import jakarta.validation.Valid;
 
 //TeamController handles the creation, updating teams for a hackathon.
 //It also handles the submission of idea details and files for a team.
@@ -31,7 +34,10 @@ public class TeamController {
 	// The team is created by a user
 	@PostMapping("{hackathonId}/{userId}")
 	public ResponseEntity<MessageResponse> createTeam(@PathVariable int hackathonId, @PathVariable int userId,
-			@RequestBody TeamCreationDTO teamCreationDTO) {
+			@RequestBody(required = false) @Valid TeamCreationDTO teamCreationDTO) {
+		if (teamCreationDTO == null) {
+			throw new BadRequestException("Request body should not be null");
+		}
 		teamService.CreateTeam(hackathonId, userId, teamCreationDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("Team created successfully"));
 	}
@@ -41,7 +47,10 @@ public class TeamController {
 	// The hackathonId identifies the hackathon
 	@PostMapping("idea/{hackathonId}/{userId}")
 	public ResponseEntity<MessageResponse> updateTeamDetails(@PathVariable int hackathonId, @PathVariable int userId,
-			@RequestBody AddIdeaDTO teamUpdateDTO) {
+			@RequestBody(required = false) @Valid AddIdeaDTO teamUpdateDTO) {
+		if (teamUpdateDTO == null) {
+			throw new BadRequestException("Request body should not be null");
+		}
 		teamService.updateTeamDetails(teamUpdateDTO, userId, hackathonId);
 		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Idea submitted successfully"));
 	}
@@ -64,8 +73,12 @@ public class TeamController {
 	// Update the team details with the provided idea details, including files.
 	@PostMapping("ideaFiles/{hackathonId}/{userId}")
 	public ResponseEntity<MessageResponse> updateIdeaDetails(@PathVariable Integer hackathonId,
-			@PathVariable Integer userId, @RequestBody IdeaDetailsRequestDTO requestBody) {
+			@PathVariable Integer userId, @RequestBody(required = false) @Valid IdeaDetailsRequestDTO requestBody) {
+		if (requestBody == null) {
+			throw new BadRequestException("Request body should not be null");
+		}
 		String message = teamService.FileSubmission(hackathonId, userId, requestBody);
 		return ResponseEntity.ok(new MessageResponse(message));
 	}
+
 }

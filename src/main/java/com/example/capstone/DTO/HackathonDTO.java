@@ -32,9 +32,9 @@ public class HackathonDTO {
 	private String rules;
 	private String judgingCriteria;
 	private boolean isCompleted;
-	private String firstTeamId;
-	private String secondTeamId;
-	private String thirdTeamId;
+	private String firstTeamName;
+	private String secondTeamName;
+	private String thirdTeamName;
 
 	// constructor
 	public HackathonDTO() {
@@ -61,10 +61,9 @@ public class HackathonDTO {
 		this.rules = rules;
 		this.judgingCriteria = judgingCriteria;
 		this.isCompleted = isCompleted;
-
-		this.firstTeamId = firstTeamId;
-		this.secondTeamId = secondTeamId;
-		this.thirdTeamId = thirdTeamId;
+		this.firstTeamName=firstTeamId;
+		this.secondTeamName=secondTeamId;
+		this.thirdTeamName=thirdTeamId;
 	}
 
 	public boolean getIsCompleted() {
@@ -75,28 +74,28 @@ public class HackathonDTO {
 		this.isCompleted = isCompleted;
 	}
 
-	public String getFirstTeamId() {
-		return firstTeamId;
+	public String getFirstTeamName() {
+		return firstTeamName;
 	}
 
-	public void setFirstTeamId(String firstTeamId) {
-		this.firstTeamId = firstTeamId;
+	public void setFirstTeamName(String firstTeamId) {
+		this.firstTeamName = firstTeamId;
 	}
 
-	public String getSecondTeamId() {
-		return secondTeamId;
+	public String getSecondTeamName() {
+		return secondTeamName;
 	}
 
-	public void setSecondTeamId(String secondTeamId) {
-		this.secondTeamId = secondTeamId;
+	public void setSecondTeamName(String secondTeamId) {
+		this.secondTeamName = secondTeamId;
 	}
 
-	public String getThirdTeamId() {
-		return thirdTeamId;
+	public String getThirdTeamName() {
+		return thirdTeamName;
 	}
 
-	public void setThirdTeamId(String thirdTeamId) {
-		this.thirdTeamId = thirdTeamId;
+	public void setThirdTeamName(String thirdTeamId) {
+		this.thirdTeamName = thirdTeamId;
 	}
 
 	public String getDescription() {
