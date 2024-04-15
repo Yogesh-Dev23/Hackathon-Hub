@@ -25,7 +25,7 @@ const PastTeams = () => {
     const hackathonsData = useSelector(selectHackathons);
 
     useEffect(() => {
-        // console.log(teamsData);
+        console.log(teamsData);
         const newTeams = teamsData?.filter(
             (team) => team?.teamId !== userData?.assignedHackathon
         );
@@ -71,7 +71,14 @@ const PastTeams = () => {
                                                 )?.name || "Unavailable"}
                                                 ]
                                             </Typography>
-                                            <Typography>4.7/5.0</Typography>
+                                            {team?.consolidatedRating ? (
+                                                <Typography>
+                                                    {team?.consolidatedRating.toFixed(
+                                                        2
+                                                    )}
+                                                    /5.00
+                                                </Typography>
+                                            ) : null}
                                         </div>
                                         <div className="flex items-baseline gap-2 justify-start">
                                             <Typography
@@ -80,7 +87,12 @@ const PastTeams = () => {
                                             >
                                                 {team?.ideaTitle}
                                             </Typography>
-                                            <Chip size="sm" variant="ghost" className="rounded-xl font-normal" value={team?.status} />
+                                            <Chip
+                                                size="sm"
+                                                variant="ghost"
+                                                className="rounded-xl font-normal"
+                                                value={team?.status}
+                                            />
                                         </div>
                                     </div>
                                 </CardHeader>
@@ -93,7 +105,10 @@ const PastTeams = () => {
                                             {team?.feedBacks?.length > 0 ? (
                                                 team.feedBacks.map(
                                                     (feedBack, index) => (
-                                                        <Typography className=" text-justify">
+                                                        <Typography
+                                                            key={index}
+                                                            className=" text-justify"
+                                                        >
                                                             {index + 1}.{" "}
                                                             {feedBack}
                                                         </Typography>

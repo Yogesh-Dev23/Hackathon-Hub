@@ -208,20 +208,20 @@ const CreateHackathon = () => {
             try {
                 console.log(formData);
                 await dispatch(hackathonCreation({ formData, token })).unwrap();
-                // setFormData({
-                //     name: "",
-                //     theme: "",
-                //     startDate: "",
-                //     ideaSubmissionDeadLine: "",
-                //     shortListDeadLine: "",
-                //     implementationDeadLine: "",
-                //     reviewStartTime: "",
-                //     reviewEndTime: "",
-                //     description: "",
-                //     guidelines: "",
-                //     prizes: "",
-                //     judgingCriteria: "",
-                // });
+                setFormData({
+                    name: "",
+                    theme: "",
+                    startDate: "",
+                    ideaSubmissionDeadLine: "",
+                    shortListDeadLine: "",
+                    implementationDeadLine: "",
+                    reviewStartTime: "",
+                    reviewEndTime: "",
+                    description: "",
+                    guidelines: "",
+                    prizes: "",
+                    judgingCriteria: "",
+                });
                 toast.success("Hackathon successfully created!");
                 // try {
                 await dispatch(fetchHackathons()).unwrap();
