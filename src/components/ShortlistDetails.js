@@ -176,7 +176,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     Theme: {selectedHackathon?.theme || ""}
                                 </Typography>
                             </div>
-                            <div className="w-full px-2">
+                            {/* <div className="w-full px-2">
                                 <div className="mb-2 flex items-center justify-between gap-4">
                                     <Typography color="blue-gray" variant="h6">
                                         Shortlist Deadline
@@ -186,7 +186,7 @@ const ShortlistDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     </Typography>
                                 </div>
                                 <Progress value={50} />
-                            </div>
+                            </div> */}
                         </CardBody>
                     </Card>
                 ) : null}

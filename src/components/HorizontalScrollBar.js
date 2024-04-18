@@ -70,7 +70,7 @@ const HorizontalScrollBar = () => {
                                     variant="h6"
                                     className=" hidden md:flex text-incedo-secondary-600 justify-center text-center"
                                 >
-                                    Start Date:{item.startDate}
+                                    Start Date:{item.startDate.slice(0,-3)}
                                 </Typography>
                             </Card>
                             {/* <div className="shrink-0 w-96 h-48 border shadow-md p-8 items-center justify-center rounded-3xl  bg-incedo-secondary-100/50">
