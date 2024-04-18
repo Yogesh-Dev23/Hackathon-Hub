@@ -27,7 +27,7 @@ const PastTeams = () => {
     useEffect(() => {
         console.log(teamsData);
         const newTeams = teamsData?.filter(
-            (team) => team?.teamId !== userData?.assignedHackathon
+            (team) => team?.hackathonId !== userData?.assignedHackathon
         );
         if (newTeams.length > 0) {
             setPastTeams(newTeams);

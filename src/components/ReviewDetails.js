@@ -94,7 +94,7 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
             setValidationErrors(newErrors);
         } else {
             try {
-                console.log(reviewData);
+                // console.log(reviewData);
                 await dispatch(rateTeam({ ...reviewData, token })).unwrap();
                 await dispatch(
                     fetchJudgeTeamsByHackathonId({
@@ -102,6 +102,8 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                         token,
                     })
                 ).unwrap();
+                setReviewData({});
+                setValidationErrors({});
                 toast.success("Review submitted succesfully");
             } catch (error) {
                 toast.error(`Error ${error?.message}`);
@@ -141,7 +143,7 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     Theme: {selectedHackathon?.theme || ""}
                                 </Typography>
                             </div>
-                            <div className="w-full px-2">
+                            {/* <div className="w-full px-2">
                                 <div className="mb-2 flex items-center justify-between gap-4">
                                     <Typography color="blue-gray" variant="h6">
                                         Shortlist Deadline
@@ -151,7 +153,7 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                     </Typography>
                                 </div>
                                 <Progress value={50} />
-                            </div>
+                            </div> */}
                         </CardBody>
                     </Card>
                 ) : null}
@@ -224,6 +226,11 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                             }
                                             // readonly=
                                         />
+                                        {validationErrors?.rating && (
+                                            <Typography className="text-red-500 text-xs w-fit">
+                                                {validationErrors.rating}
+                                            </Typography>
+                                        )}
                                     </div>
                                     <div className="w-full mt-2 rounded-2xl flex gap-3 p-2 py-1 items-center">
                                         <Textarea
@@ -234,6 +241,11 @@ const ReviewDetails = ({ hackathons, selectedIdeaId, IDEAS }) => {
                                             value={reviewData?.feedback || ""}
                                             onChange={handleFeedback}
                                         />
+                                        {validationErrors?.feedback && (
+                                            <Typography className="text-red-500 text-xs w-fit">
+                                                {validationErrors.feedback}
+                                            </Typography>
+                                        )}
                                     </div>
                                     <div className="flex gap-2 p-2 justify-center md:justify-start w-full">
                                         <Button

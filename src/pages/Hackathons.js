@@ -33,6 +33,7 @@ const themes = [
     { name: "Banking and Wealth Management", value: "banking" },
     { name: "Telecom", value: "telecom" },
     { name: "Product Engineering", value: "product" },
+    { name: "Others", value: "others" },
 ];
 
 const TABS = [
@@ -115,6 +116,7 @@ const Hackathons = () => {
         if (searchParamsObject?.hackathonId) {
             setSelectedHackathonId(Number(searchParamsObject.hackathonId));
             // setSearchParams({});
+            // console.log("tirla22");
             navigate("", { replace: true });
         }
     }, [searchParamsObject, hackathons]);

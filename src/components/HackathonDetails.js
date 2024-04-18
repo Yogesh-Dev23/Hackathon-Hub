@@ -32,7 +32,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
 
         const time = new Date(date).toLocaleTimeString("en-GB", {
             hour12: false,
-        });
+        }).slice(0,-3);
 
         return `${shortdate}, ${time}`;
     };
@@ -99,7 +99,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                                 Time:{" "}
                                 {selectedHackathon?.startDate
                                     ?.split(" ")[1]
-                                    ?.split(".")[0] || ""}
+                                    ?.split(".")[0].slice(0,-3) || ""}
                             </Typography>
                         </div>
                         <div className="w-full mt-1 rounded-2xl p-2">

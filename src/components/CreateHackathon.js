@@ -27,6 +27,7 @@ const CreateHackathon = () => {
         { name: "Banking and Wealth Management", short: "B&WM" },
         { name: "Telecom", short: "TL" },
         { name: "Product Engineering", short: "PE" },
+        { name: "Others", short: "OT" },
     ];
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
@@ -357,7 +358,7 @@ const CreateHackathon = () => {
                                     className: "min-w-0",
                                 }}
                                 // onFocus={}
-                                step={1}
+                                // step={1}
                                 value={formData.startDate}
                                 name="startDate"
                                 onChange={handleChange}
@@ -387,7 +388,7 @@ const CreateHackathon = () => {
                                 containerProps={{
                                     className: "min-w-0",
                                 }}
-                                step={1}
+                                // step={1}
                                 value={formData.ideaSubmissionDeadLine}
                                 name="ideaSubmissionDeadLine"
                                 onChange={handleChange}
@@ -416,7 +417,7 @@ const CreateHackathon = () => {
                                 containerProps={{
                                     className: "min-w-0",
                                 }}
-                                step={1}
+                                // step={1}
                                 name="shortListDeadLine"
                                 value={formData.shortListDeadLine}
                                 onChange={handleChange}
@@ -445,7 +446,7 @@ const CreateHackathon = () => {
                                 containerProps={{
                                     className: "min-w-0",
                                 }}
-                                step={1}
+                                // step={1}
                                 value={formData.implementationDeadLine}
                                 name="implementationDeadLine"
                                 onChange={handleChange}
@@ -474,7 +475,7 @@ const CreateHackathon = () => {
                                 containerProps={{
                                     className: "min-w-0",
                                 }}
-                                step={1}
+                                // step={1}
                                 value={formData.reviewStartTime}
                                 name="reviewStartTime"
                                 onChange={handleChange}
@@ -503,7 +504,7 @@ const CreateHackathon = () => {
                                 containerProps={{
                                     className: "min-w-0",
                                 }}
-                                step={1}
+                                // step={1}
                                 value={formData.reviewEndTime}
                                 name="reviewEndTime"
                                 onChange={handleChange}
@@ -547,10 +548,10 @@ const CreateHackathon = () => {
                                 color="blue-gray"
                                 className="-mb-3"
                             >
-                                Guidelines
+                                Rules
                             </Typography>
                             <Textarea
-                                placeholder="Guidelines"
+                                placeholder="Rules"
                                 className="px-2 !border-t-blue-gray-200 focus:!border-t-gray-900"
                                 // style={{ minWidth: "unset" }}
                                 labelProps={{

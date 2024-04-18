@@ -43,6 +43,7 @@ const DOMAINS = [
     { name: "Ops Transformation", value: "operations" },
     { name: "Cloud and Digital", value: "cloud" },
     { name: "Experience Design", value: "ux" },
+    { name: "Others", value: "others" },
 ];
 
 const IdeaDetails = () => {
@@ -185,10 +186,20 @@ const IdeaDetails = () => {
 
     const [validationRepoErrors, setValidationRepoErrors] = useState({});
 
+
+    const validateLink = (link) => {
+        // Regex pattern for email validation
+        const pattern = /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/g
+        return pattern.test(link);
+    };
+
     const handleRepoSubmit = async () => {
         const newErrors = {};
         if (!repoData.ideaRepo) {
             newErrors.ideaRepo = "Repository Link is Required!";
+        }
+        if (repoData.ideaRepo && !validateLink(repoData.ideaRepo)) {
+            newErrors.ideaRepo = "Link is Invalid!";
         }
         if (repoData.ideaRepo && repoData.ideaRepo.length > 255) {
             newErrors.ideaRepo =
@@ -197,8 +208,11 @@ const IdeaDetails = () => {
         if (!repoData.ideaFiles) {
             newErrors.ideaFiles = "Drive Link Is Required";
         }
+        if (repoData.ideaFiles && !validateLink(repoData.ideaFiles)) {
+            newErrors.ideaFiles = "Link is Invalid!";
+        }
         if (repoData.ideaFiles && repoData.ideaFiles.length > 255) {
-            newErrors.ideaBody =
+            newErrors.ideaFiles =
                 "Drive Link Should Not Contain More Than 255 Characters";
         }
         if (Object.keys(newErrors).length > 0) {
