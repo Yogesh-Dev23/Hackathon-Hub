@@ -72,7 +72,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                             >
                                 {selectedHackathon?.name}
                             </Typography>
-                            {selectedHackathon.isCompleted ? (
+                            {selectedHackathon?.hackathonStatus === "ended" ? (
                                 <Link
                                     to={`/results/${selectedHackathon.hackathonId}`}
                                 >
@@ -294,7 +294,7 @@ const HackathonDetails = ({ hackathons, selectedHackathonId }) => {
                         </div>
                         <div className="w-fit mt-2 mx-auto">
                             {user?.role === "participant" &&
-                            !selectedHackathon?.isCompleted ? (
+                            !selectedHackathon?.hackathonStatus === "started" ? (
                                 <Button
                                     disabled={!user.available}
                                     onClick={() => setOpen((cur) => !cur)}

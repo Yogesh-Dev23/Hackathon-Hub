@@ -170,8 +170,8 @@ const IdeaDetails = () => {
                 await dispatch(
                     fetchTeamDetails({ userId: userData.userId, token })
                 ).unwrap();
-                console.log(teamsData);
-                console.log(teamsData);
+                // console.log(teamsData);
+                // console.log(teamsData);
             } catch (error) {
                 toast.error(`Error: ${error?.message}`);
             }
@@ -219,7 +219,7 @@ const IdeaDetails = () => {
             setValidationRepoErrors(newErrors);
         } else {
             try {
-                console.log(repoData);
+                // console.log(repoData);
                 await dispatch(
                     repoSubmission({ hackathonId, userId, repoData, token })
                 ).unwrap();

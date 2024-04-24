@@ -47,7 +47,7 @@ const Results = () => {
     const teamDetails = useSelector((state) =>
         selectTeamByHackathonId(state, hackathonId)
     );
-    console.log(hackathon);
+    // console.log(hackathon);
     // useEffect(() => {
     //     if (teams.length > 0) {
     //         setTeamDetails(
@@ -59,7 +59,7 @@ const Results = () => {
     return (
         <BaseLayout>
             <div className="py-6">
-                {!hackathon || !hackathon.isCompleted ? (
+                {!hackathon || hackathon?.hackathonStatus !== "ended" ? (
                     <div className="w-fit mx-auto justify-self-center">
                         <Alert
                             variant="ghost"

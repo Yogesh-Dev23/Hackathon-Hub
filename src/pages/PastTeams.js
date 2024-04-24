@@ -25,7 +25,7 @@ const PastTeams = () => {
     const hackathonsData = useSelector(selectHackathons);
 
     useEffect(() => {
-        console.log(teamsData);
+        // console.log(teamsData);
         const newTeams = teamsData?.filter(
             (team) => team?.hackathonId !== userData?.assignedHackathon
         );

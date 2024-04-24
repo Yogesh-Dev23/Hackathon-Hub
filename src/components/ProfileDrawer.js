@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { clearEvaluators } from "../features/evaluator/evaluatorSlice";
 import { clearTeams } from "../features/team/teamSlice";
 import Cookies from "js-cookie";
+import { clearHackathons } from "../features/hackathon/hackathonSlice";
 
 const ProfileDrawer = ({ opens, onClose }) => {
     const [editMode, setEditMode] = useState(false);
@@ -40,11 +41,12 @@ const ProfileDrawer = ({ opens, onClose }) => {
     // };
     const dispatch = useDispatch();
     const logoutHandler = () => {
+        dispatch(clearEvaluators());
+        dispatch(clearTeams());
+        dispatch(clearHackathons())
         dispatch(logout());
         Cookies.remove("userId");
         Cookies.remove("token");
-        dispatch(clearEvaluators());
-        dispatch(clearTeams());
         onClose();
         navigate("/");
     };

@@ -27,6 +27,29 @@ export const fetchHackathons = createAsyncThunk(
         }
     }
 );
+
+export const fetchHackathonsAdmin = createAsyncThunk(
+    "hackathon/fetchHackathonsAdmin",
+    async ({ token }, thunkAPI) => {
+        try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await axios.get(
+                "http://localhost:8080/Admin/hackathon",
+                { headers }
+            );
+            if (!response.data) {
+                return [];
+            }
+            // console.log(response.data);
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
 export const hackathonCreation = createAsyncThunk(
     "hackathon/hackathonCreation",
     async ({ formData, token }, thunkAPI) => {
@@ -59,7 +82,8 @@ export const hackathonEnd = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.put(
-                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`, {},
+                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`,
+                {},
                 { headers }
             );
             // console.log(response);
@@ -111,7 +135,11 @@ export const fetchRequests = createAsyncThunk(
 const hackathonSlice = createSlice({
     name: "hackathon",
     initialState,
-    reducers: {},
+    reducers: {
+        clearHackathons(state) {
+            state.data = [];
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchHackathons.pending, (state) => {
@@ -124,6 +152,20 @@ const hackathonSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchHackathons.rejected, (state, action) => {
+                state.loading = false;
+                state.data = [];
+                state.error = action.payload; // Set error payload
+            })
+            .addCase(fetchHackathonsAdmin.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchHackathonsAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload; // Extract data from the response
+                state.error = null;
+            })
+            .addCase(fetchHackathonsAdmin.rejected, (state, action) => {
                 state.loading = false;
                 state.data = [];
                 state.error = action.payload; // Set error payload
@@ -196,5 +238,7 @@ export const selectHackathonById = (state, hackathonId) =>
 export const selectRequests = (state) => state.hackathon.requests;
 export const selectErrorHackathon = (state) => state.hackathon.error;
 export const selectLoadingHackathon = (state) => state.hackathon.loading;
+
+export const { clearHackathons } = hackathonSlice.actions;
 
 export default hackathonSlice.reducer;
