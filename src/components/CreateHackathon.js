@@ -15,6 +15,7 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import {
     fetchHackathons,
+    fetchHackathonsAdmin,
     hackathonCreation,
 } from "../features/hackathon/hackathonSlice";
 import { Slide, ToastContainer, toast } from "react-toastify";
@@ -74,8 +75,8 @@ const CreateHackathon = () => {
             "reviewEndTime",
         ];
         dates.forEach((date) => {
-            console.log(date);
-            console.log(formData[date]);
+            // console.log(date);
+            // console.log(formData[date]);
             if (formData[date]?.length === 16) {
                 const newData = formData[date] + ":00";
                 formData[date] = newData;
@@ -207,7 +208,7 @@ const CreateHackathon = () => {
             setValidationErrros(newErrors);
         } else {
             try {
-                console.log(formData);
+                // console.log(formData);
                 await dispatch(hackathonCreation({ formData, token })).unwrap();
                 setFormData({
                     name: "",
@@ -225,7 +226,7 @@ const CreateHackathon = () => {
                 });
                 toast.success("Hackathon successfully created!");
                 // try {
-                await dispatch(fetchHackathons()).unwrap();
+                await dispatch(fetchHackathonsAdmin({ token })).unwrap();
                 // } catch (error) {
                 //     toast.error(`Error: ${error?.message}`);
                 // }

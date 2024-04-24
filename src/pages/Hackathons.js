@@ -23,7 +23,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { IconButton, ButtonGroup } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
-import {
+import hackathonSlice, {
     fetchHackathons,
     selectHackathons,
 } from "../features/hackathon/hackathonSlice";
@@ -78,7 +78,7 @@ const Hackathons = () => {
     );
 
     const [filteredHackathons, setFilteredHackathons] =
-        React.useState(hackathons);
+        React.useState(hackathons?.filter(hackathon=> hackathon.hackathonStatus === "started" || hackathon.hackathonStatus === "ended" ));
 
     useEffect(() => {
         setSearchParamsObject(Object.fromEntries([...searchParams]));
@@ -97,7 +97,7 @@ const Hackathons = () => {
                     themes.find((theme) => theme.name === hackathon.theme)
                         .value === searchParamsObject.theme
             );
-            setFilteredHackathons(newHackathons);
+            setFilteredHackathons(newHackathons?.filter(hackathon=> hackathon.hackathonStatus === "started" || hackathon.hackathonStatus === "ended" ));
             if (newHackathons?.length > 0) {
                 setTotalPages(Math.floor((newHackathons?.length - 1) / 6 + 1));
             }
@@ -105,7 +105,7 @@ const Hackathons = () => {
                 setTotalPages(0);
             }
         } else {
-            setFilteredHackathons(hackathons);
+            setFilteredHackathons(hackathons?.filter(hackathon=> hackathon.hackathonStatus === "started" || hackathon.hackathonStatus === "ended" ));
             if (hackathons?.length > 0) {
                 setTotalPages(Math.floor((hackathons?.length - 1) / 6 + 1));
             }
@@ -155,7 +155,7 @@ const Hackathons = () => {
         // console.log("hi" + keyword);
         if (keyword === "all") {
             // console.log(hackathons)
-            setFilteredHackathons(hackathons);
+            setFilteredHackathons(hackathons?.filter(hackathon=> hackathon.hackathonStatus === "started" || hackathon.hackathonStatus === "ended" ));
             if (hackathons?.length > 0) {
                 setTotalPages(Math.floor((hackathons?.length - 1) / 6 + 1));
             }
@@ -169,7 +169,7 @@ const Hackathons = () => {
                 themes.find((theme) => theme.name === hackathon.theme).value ===
                 keyword
         );
-        setFilteredHackathons(newHackathons);
+        setFilteredHackathons(newHackathons?.filter(hackathon=> hackathon.hackathonStatus === "started" || hackathon.hackathonStatus === "ended" ));
 
         if (newHackathons?.length > 0) {
             setTotalPages(Math.floor((newHackathons?.length - 1) / 6 + 1));
@@ -253,7 +253,7 @@ const Hackathons = () => {
                                                       >
                                                           {hackathon.name}
                                                           <>
-                                                              {hackathon.isCompleted ? (
+                                                              {hackathon?.hackathonStatus === "ended" ? (
                                                                   <svg
                                                                       xmlns="http://www.w3.org/2000/svg"
                                                                       viewBox="0 0 24 24"
@@ -291,7 +291,7 @@ const Hackathons = () => {
                                                       >
                                                           {hackathon.name}
                                                           <>
-                                                              {hackathon.isCompleted ? (
+                                                              {hackathon?.hackathonStatus === "ended" ? (
                                                                   <svg
                                                                       xmlns="http://www.w3.org/2000/svg"
                                                                       viewBox="0 0 24 24"

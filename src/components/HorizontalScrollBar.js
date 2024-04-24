@@ -26,7 +26,7 @@ const HorizontalScrollBar = () => {
     useEffect(() => {
         if (hackathonsData) {
             const newHackathons = hackathonsData.filter(
-                (hackathon) => hackathon.isCompleted === false
+                (hackathon) => hackathon?.hackathonStatus === "started"
             );
             setHackathons(newHackathons);
         }

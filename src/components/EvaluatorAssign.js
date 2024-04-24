@@ -197,10 +197,11 @@ const EvaluatorAssign = () => {
                                     </MenuHandler>
                                     <MenuList className="max-h-[20rem] max-w-[18rem]">
                                         {hackathons.length === 0 ||
-                                        hackathons.every(
+                                        hackathons?.filter(
                                             (hackathon) =>
-                                                hackathon.isCompleted === true
-                                        ) ? (
+                                                hackathon.hackathonStatus ===
+                                                "created"
+                                        )?.length === 0 ? (
                                             <MenuItem
                                                 className="flex items-center gap-2"
                                                 disabled={true}
@@ -211,7 +212,8 @@ const EvaluatorAssign = () => {
                                             hackathons.map(
                                                 (hackathon, index) => {
                                                     if (
-                                                        !hackathon.isCompleted
+                                                        hackathon.hackathonStatus ===
+                                                        "created"
                                                     ) {
                                                         return (
                                                             <MenuItem

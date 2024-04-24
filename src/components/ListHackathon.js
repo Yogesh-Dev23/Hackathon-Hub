@@ -4,6 +4,7 @@ import { Card, Typography, Chip, Button } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchHackathons,
+    fetchHackathonsAdmin,
     hackathonEnd,
     selectHackathons,
 } from "../features/hackathon/hackathonSlice";
@@ -45,7 +46,8 @@ const ListHackathon = () => {
                 } ended succesfully!`
             );
             // try {
-            await dispatch(fetchHackathons()).unwrap();
+            await dispatch(fetchHackathonsAdmin({ token })).unwrap();
+            // await dispatch(fetchHackathons()).unwrap();
             // } catch (error) {
             //     toast.error(`Error: ${error?.message}`);
             // }
@@ -138,7 +140,7 @@ const ListHackathon = () => {
                                         />
                                     </td> */}
                                     <td className="p-4 hidden lg:table-cell">
-                                        {hackathon.isCompleted ? (
+                                        {hackathon?.hackathonStatus === "ended" ? (
                                             <Link
                                                 to={`/results/${hackathon.hackathonId}`}
                                             >
@@ -155,7 +157,7 @@ const ListHackathon = () => {
                                                 className="flex items-center gap-3"
                                                 size="sm"
                                                 disabled={
-                                                    hackathon?.isCompleted
+                                                    hackathon?.hackathonStatus === "ended"
                                                 }
                                                 onClick={() => {
                                                     handleHackathonEnd(

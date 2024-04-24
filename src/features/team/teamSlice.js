@@ -62,7 +62,7 @@ export const repoSubmission = createAsyncThunk(
                 repoData,
                 { headers }
             );
-            console.log(response)
+            // console.log(response)
             return response.data;
         } catch (error) {
             // console.log(error);
@@ -125,7 +125,7 @@ export const fetchPanelistTeamsByHackathonId = createAsyncThunk(
             const headers = {
                 Authorization: `Bearer ${token}`,
             };
-            console.log(token)
+            // console.log(token)
             const response = await axios.get(
                 `http://localhost:8080/panelist/${hackathonId}/${panelistid}`,
                 { headers }
@@ -146,7 +146,7 @@ export const rejectTeam = createAsyncThunk(
     async ({ teamId, token }, thunkAPI) => {
         // Assuming hackathonId is already available in the state
         try {
-            console.log(teamId)
+            // console.log(teamId)
             // if (hackathonId !== -1 && panelistid && teamId) {
             const headers = {
                 Authorization: `Bearer ${token}`,

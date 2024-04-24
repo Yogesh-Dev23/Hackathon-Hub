@@ -11,6 +11,7 @@ import Hackathons from "./pages/Hackathons";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchHackathons,
+    fetchHackathonsAdmin,
     fetchRequests,
     selectHackathons,
     selectRequests,
@@ -66,22 +67,26 @@ function App() {
     // const requests = useSelector(selectRequests);
 
     // useEffect(() => {
-    //     console.log(requests);
-    // }, [requests]);
+    //     console.log(hackathons);
+    // }, [hackathons]);
 
     // const token = Cookies.get("token");
     useEffect(() => {
-        dispatch(fetchHackathons());
         //just a work around until we have a proper userdetails fetch api
 
         //
+        if (!userData) {
+            dispatch(fetchHackathons());
+        }
 
         if (userData?.role === "admin") {
             dispatch(fetchEvaluators({ token }));
             dispatch(fetchRequests({ token }));
+            dispatch(fetchHackathonsAdmin({ token }));
         }
         if (userData?.role === "participant") {
             dispatch(fetchTeamDetails({ userId, token }));
+            dispatch(fetchHackathons());
         }
         if (userData?.role === "judge") {
             dispatch(
@@ -90,6 +95,7 @@ function App() {
                     token,
                 })
             );
+            dispatch(fetchHackathons());
         }
         if (userData?.role === "panelist") {
             dispatch(
@@ -99,6 +105,7 @@ function App() {
                     token,
                 })
             );
+            dispatch(fetchHackathons());
         }
     }, [userData, token]);
 

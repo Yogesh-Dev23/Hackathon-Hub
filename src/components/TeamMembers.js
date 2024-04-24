@@ -29,7 +29,6 @@ const TeamMembers = () => {
 
     useEffect(() => {
         if (userData && teamsData.length > 0) {
-            console.log("I was here");
             setTeamDetails(
                 teamsData.find(
                     (team) => team.hackathonId === userData?.assignedHackathon
