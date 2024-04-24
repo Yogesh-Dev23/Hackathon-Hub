@@ -12,9 +12,11 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.example.capstone.DTO.AddEvaluatorsDTO;
+import com.example.capstone.DTO.AdminHackathonDTO;
 import com.example.capstone.DTO.CreateHackathonDTO;
 import com.example.capstone.DTO.HackathonDTO;
 import com.example.capstone.Entity.Hackathon;
+import com.example.capstone.Entity.HackathonStatus;
 import com.example.capstone.Entity.Judge;
 import com.example.capstone.Entity.Panelist;
 import com.example.capstone.Entity.Participant;
@@ -57,7 +59,7 @@ public class HackathonService {
 	 */
 	public void CreateHackathon(CreateHackathonDTO createHackathonDTO) {
 		Hackathon hackathon = new Hackathon();
-		hackathon.setCompleted(false);
+		hackathon.setHackathonStatus(HackathonStatus.created);
 		hackathon.setName(createHackathonDTO.getName());
 		hackathon.setTheme(createHackathonDTO.getTheme());
 		hackathon.setStartDate(createHackathonDTO.getStartDate());
@@ -81,6 +83,17 @@ public class HackathonService {
 	public List<HackathonDTO> getAllHackathons() {
 		List<HackathonDTO> hackathonDTOs = hackathonRepository.findHackathonsWithSelectedAttributes();
 		for(HackathonDTO dto:hackathonDTOs)
+		{
+			dto.setFirstTeamName(dto.getFirstTeamName()== null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getFirstTeamName())));
+			dto.setSecondTeamName( dto.getSecondTeamName() == null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getSecondTeamName())));
+			dto.setThirdTeamName( dto.getThirdTeamName()== null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getThirdTeamName())));
+		}
+		return hackathonDTOs;
+	}
+	public List<AdminHackathonDTO> getHackathonsForAdmin()
+	{
+		List<AdminHackathonDTO> hackathonDTOs=hackathonRepository.findHackathonsForAdmin();
+		for(AdminHackathonDTO dto:hackathonDTOs)
 		{
 			dto.setFirstTeamName(dto.getFirstTeamName()== null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getFirstTeamName())));
 			dto.setSecondTeamName( dto.getSecondTeamName() == null ? null : teamService.FindTeamNameById(Integer.valueOf(dto.getSecondTeamName())));
@@ -221,6 +234,27 @@ public class HackathonService {
 		return consolidatedRating;
 	}
 
+
+//	public void StartHackathon(int hackathonId)
+//	{
+//		Optional<Hackathon> optionalHackathon = hackathonRepository.findById(hackathonId);
+//		Hackathon hackathon=optionalHackathon.get();
+//		if(hackathon==null)
+//		{
+//			throw new ResourceNotFoundException("Hackathon not found");
+//		}
+//		if(hackathon.getPanelists().size()==0)
+//		{
+//			throw new ResourceNotFoundException("Panelists not assigned");
+//		}
+//		if(hackathon.getJudges().size()==0)
+//		{
+//			throw new ResourceNotFoundException("Judges not assigned");
+//		}
+//		hackathon.setHackathonStatus(HackathonStatus.started);
+//		updateHackathon(hackathon);
+//		
+//	}
 	/**
 	 * Finalizes a hackathon by computing final scores and updating the hackathon
 	 * state.
@@ -235,9 +269,10 @@ public class HackathonService {
 		List<Team> teams = hackathon.get().getTeams();
 		List<Pair<Integer, Float>> scores = new ArrayList<>();
 		for (Team team : teams) {
+			Float f= getConsolidatedRating(team);
 			if(team.getConsolidatedRating()!=null)
 			{
-		       scores.add(Pair.of(team.getTeamId(), getConsolidatedRating(team)));
+		       scores.add(Pair.of(team.getTeamId(),f));
 			}
 			else
 			{
@@ -257,11 +292,10 @@ public class HackathonService {
 			panelist.getUser().setAssignedHackathon(-1);
 		}
 		Collections.sort(scores, (s1, s2) -> s1.getSecond().compareTo(s2.getSecond()));
-		hackathon.get().setCompleted(true);
 		hackathon.get().setFirstTeamId(scores.size() >= 1 ? String.valueOf(scores.get(0).getFirst()) : null);
 		hackathon.get().setSecondTeamId(scores.size() >= 2 ? String.valueOf(scores.get(1).getFirst()) : null);
 		hackathon.get().setThirdTeamId(scores.size() >= 3 ? String.valueOf(scores.get(2).getFirst()) : null);
-		hackathon.get().setCompleted(true);
+		hackathon.get().setHackathonStatus(HackathonStatus.ended);;
 		updateHackathon(hackathon.get());
 	
 	}

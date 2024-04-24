@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.capstone.DTO.RegisterEvaluatorDTO;
 import com.example.capstone.Exceptions.BadRequestException;
 import com.example.capstone.DTO.AddEvaluatorsDTO;
+import com.example.capstone.DTO.AdminHackathonDTO;
 import com.example.capstone.DTO.ContactDetailsDTO;
 import com.example.capstone.DTO.CreateHackathonDTO;
 import com.example.capstone.DTO.GetEvaluatorsDTO;
-import com.example.capstone.DTO.HackathonDTO;
 import com.example.capstone.DTO.MessageResponse;
 import com.example.capstone.Service.AdminService;
 import com.example.capstone.Service.ContactDetailsService;
@@ -72,7 +72,7 @@ public class AdminController {
 
 //	 Endpoint to retrieve all hackathons
 	@GetMapping("hackathon")
-	public ResponseEntity<List<HackathonDTO>> getHackathons() {
+	public ResponseEntity<List<AdminHackathonDTO>> getHackathons() {
 		return ResponseEntity.status(HttpStatus.OK).body(adminService.getAllHackathons());
 	}
 
@@ -93,4 +93,5 @@ public class AdminController {
 	public ResponseEntity<List<ContactDetailsDTO>> getContactDetails() {
 		return ResponseEntity.status(HttpStatus.OK).body(contactDetailsService.getContactDetails());
 	}
+
 }

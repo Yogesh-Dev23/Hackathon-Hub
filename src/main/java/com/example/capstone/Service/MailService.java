@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.example.capstone.Exceptions.FailedToSendEmailException;
@@ -16,7 +17,9 @@ public class MailService {
 	@Value("${spring.mail.username}")
 	private String sender;
 
-	public boolean sendEmail(String receiver, String body, String Subject) throws FailedToSendEmailException {
+	
+	@Async 
+	public void sendEmail(String receiver, String body, String Subject) throws FailedToSendEmailException {
 		try {
 			SimpleMailMessage mailMessage = new SimpleMailMessage();
 			mailMessage.setFrom(sender);
@@ -24,7 +27,6 @@ public class MailService {
 			mailMessage.setText(body);
 			mailMessage.setSubject(Subject);
 			javaMailSender.send(mailMessage);
-			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new FailedToSendEmailException("Failed to Send Email, Retry");

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import com.example.capstone.DTO.RegisterEvaluatorDTO;
 import com.example.capstone.Entity.Role;
 import com.example.capstone.DTO.AddEvaluatorsDTO;
+import com.example.capstone.DTO.AdminHackathonDTO;
 import com.example.capstone.DTO.CreateHackathonDTO;
 import com.example.capstone.DTO.GetEvaluatorsDTO;
-import com.example.capstone.DTO.HackathonDTO;
 
 //Service layer for admin related operations.
 @Service
@@ -60,8 +60,8 @@ public class AdminService {
 	 * 
 	 * @return List of HackathonDTO containing hackathon data.
 	 */
-	public List<HackathonDTO> getAllHackathons() {
-		return hackathonService.getAllHackathons();
+	public List<AdminHackathonDTO> getAllHackathons() {
+		return hackathonService.getHackathonsForAdmin();
 	}
 
 	/**
@@ -82,5 +82,10 @@ public class AdminService {
 	public void endHackathon(int hackathonId) {
 		hackathonService.endHackathon(hackathonId);
 	}
+	
+//	public void startHackathon(int hackathonId)
+//	{
+//		hackathonService.StartHackathon(hackathonId);
+//	}
 
 }

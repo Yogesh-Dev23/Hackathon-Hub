@@ -13,6 +13,7 @@ import com.example.capstone.DTO.AddIdeaDTO;
 import com.example.capstone.DTO.IdeaDetailsRequestDTO;
 import com.example.capstone.DTO.TeamCreationDTO;
 import com.example.capstone.Entity.Hackathon;
+import com.example.capstone.Entity.HackathonStatus;
 import com.example.capstone.Entity.Panelist;
 import com.example.capstone.Entity.Participant;
 import com.example.capstone.Entity.Role;
@@ -53,7 +54,7 @@ public class TeamService {
 	public void CreateTeam(int hackathonid, int userid, TeamCreationDTO teamCreationDTO) {
 		if (isDevelopment || checkTimeBound(hackathonid)) {
 			Hackathon hackathon = hackathonService.findHackathon(hackathonid);
-			if(!hackathon.isCompleted())
+			if(hackathon.getHackathonStatus()==HackathonStatus.started)
 			{
 			Team team = new Team();
 			team.setName(teamCreationDTO.getName());
@@ -91,6 +92,10 @@ public class TeamService {
 			{
 				throw new ResourceNotFoundException("Panelist not assigned to the hackathon");
 			}
+			}
+			else if(hackathon.getHackathonStatus()==HackathonStatus.created)
+			{
+				throw new UnauthorizedException("Hackathon not started");
 			}
 			else
 			{

@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import com.example.capstone.DTO.RegisterEvaluatorDTO;
 import com.example.capstone.DTO.TeamDetailsDTO;
 import com.example.capstone.DTO.TeamUserDetailsDTO;
@@ -71,16 +70,11 @@ public class UserService {
 					+ "For security reasons, do not share this OTP with anyone.\r\n" + "\r\n" + "Thank you,\r\n"
 					+ "\r\n" + "\n" + "Regards,\n" + "Team HackerHub";
 			// Send email with OTP
-			if (mailService.sendEmail(user.getEmail(), body, subject)) {
-				// Generate hash for OTP and password
-				String otpHash = passwordEncoder.encode(otp);
-				String passwordHash = passwordEncoder.encode(user.getPassword());
-				// Save OTP and user details
-				otpService.saveOtp(user.getEmail(), user.getName(), passwordHash, otpHash);
-				return true;
-			} else {
-				return false; // Email sending failed
-			}
+			mailService.sendEmail(user.getEmail(), body, subject);
+			String otpHash = passwordEncoder.encode(otp);
+			String passwordHash = passwordEncoder.encode(user.getPassword());
+			otpService.saveOtp(user.getEmail(), user.getName(), passwordHash, otpHash);
+			return true;
 		} else {
 			throw new UserAlreadyExistsException("User already exists");
 		}
@@ -189,13 +183,9 @@ public class UserService {
 					+ "We appreciate your participation and look forward to your valuable contributions to HackerHub.\r\n"
 					+ "\r\n\r\n" + "Best regards," + "\r\n" + "Team HackerHub";
 			// Send email with login credentials
-			if (mailService.sendEmail(addEvaluatorDTO.getEmail(), body, subject)) {
-				// Save the evaluator to the database
-				userRepository.save(evaluator);
-			} else {
-				// Throw exception if email sending fails
-				throw new FailedToSendEmailException("Failed to send Email Exception");
-			}
+			mailService.sendEmail(addEvaluatorDTO.getEmail(), body, subject);
+			// Save the evaluator to the database
+			userRepository.save(evaluator);
 		}
 	}
 
@@ -371,11 +361,9 @@ public class UserService {
 						+ "\r\n" + "If you did not request this OTP, please ignore this message.\r\n" + "\r\n"
 						+ "For security reasons, do not share this OTP with anyone.\r\n" + "\r\n" + "Thank you,\r\n"
 						+ "\r\n" + "\n" + "Regards,\n" + "Team HackerHub";
-				if (mailService.sendEmail(email, body, subject)) {
-					otpService.saveOtp(email, null, null, otp);
-				} else {
-					throw new FailedToSendEmailException("Failed to send Email Exception");
-				}
+
+				mailService.sendEmail(email, body, subject);
+				otpService.saveOtp(email, null, null, otp);
 			} else {
 				throw new InvalidEmailException("Email is not valid");
 			}
@@ -433,8 +421,7 @@ public class UserService {
 
 	public UserDetailsDTO findUserByMail(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
-		if(user.get().getOfRegistered().equals(TypeOfRegistered.SSO))
-		{
+		if (user.get().getOfRegistered().equals(TypeOfRegistered.SSO)) {
 			throw new ResourceNotFoundException("User not found");
 		}
 		UserDetailsDTO dto = new UserDetailsDTO();
@@ -450,11 +437,10 @@ public class UserService {
 	public UserDetailsDTO findUserByMailSSO(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty()) {
-			
+
 			return null;
 		}
-		if(user.get().getOfRegistered().equals(TypeOfRegistered.normal))
-		{
+		if (user.get().getOfRegistered().equals(TypeOfRegistered.normal)) {
 			throw new ResourceNotFoundException("User not found");
 		}
 		UserDetailsDTO dto = new UserDetailsDTO();

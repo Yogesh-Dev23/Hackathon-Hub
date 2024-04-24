@@ -1,11 +1,11 @@
 package com.example.capstone.DTO;
 
-import com.example.capstone.Entity.HackathonStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
-public class HackathonDTO {
+import com.example.capstone.Entity.HackathonStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+public class AdminHackathonDTO {
 	private int hackathonId;
 	private String name;
 	private String theme;
@@ -36,17 +36,18 @@ public class HackathonDTO {
 	private String firstTeamName;
 	private String secondTeamName;
 	private String thirdTeamName;
+	private int noOfTeamsRegistered=0;
 
 	// constructor
-	public HackathonDTO() {
-
+	public AdminHackathonDTO() {
+        noOfTeamsRegistered=0;
 	}
 
-	public HackathonDTO(int hackathonId, String name, String theme, LocalDateTime startDate,
+	public AdminHackathonDTO(int hackathonId, String name, String theme, LocalDateTime startDate,
 			LocalDateTime ideaSubmissionDeadline, LocalDateTime shortListDeadline,
 			LocalDateTime implementationSubmissionDeadline, LocalDateTime reviewStartTime, LocalDateTime reviewEndTime,
-			String description, String prizes, String rules, String judgingCriteria,HackathonStatus hackathonStatus,
-			String firstTeamId, String secondTeamId, String thirdTeamId) {
+			String description, String prizes, String rules, String judgingCriteria, HackathonStatus hackathonStatus,
+			String firstTeamId, String secondTeamId, String thirdTeamId, int noOfTeamsRegistered) {
 		super();
 		this.hackathonId = hackathonId;
 		this.name = name;
@@ -61,13 +62,12 @@ public class HackathonDTO {
 		this.prizes = prizes;
 		this.rules = rules;
 		this.judgingCriteria = judgingCriteria;
-		this.hackathonStatus= hackathonStatus;
-		this.firstTeamName=firstTeamId;
-		this.secondTeamName=secondTeamId;
-		this.thirdTeamName=thirdTeamId;
+		this.hackathonStatus = hackathonStatus;
+		this.firstTeamName = firstTeamId;
+		this.secondTeamName = secondTeamId;
+		this.thirdTeamName = thirdTeamId;
+		this.noOfTeamsRegistered = noOfTeamsRegistered;
 	}
-
-	
 
 	public HackathonStatus getHackathonStatus() {
 		return hackathonStatus;
@@ -204,5 +204,14 @@ public class HackathonDTO {
 	public void setReviewEndTime(LocalDateTime reviewEndTime) {
 		this.reviewEndTime = reviewEndTime;
 	}
+
+	public int getNoOfTeamsRegistered() {
+		return noOfTeamsRegistered;
+	}
+
+	public void setNoOfTeamsRegistered(int noOfTeamsRegistered) {
+		this.noOfTeamsRegistered = noOfTeamsRegistered;
+	}
+	
 
 }
