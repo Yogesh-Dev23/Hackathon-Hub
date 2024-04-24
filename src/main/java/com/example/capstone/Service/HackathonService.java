@@ -291,7 +291,7 @@ public class HackathonService {
 			panelist.getUser().setAvailable(true);
 			panelist.getUser().setAssignedHackathon(-1);
 		}
-		Collections.sort(scores, (s1, s2) -> s1.getSecond().compareTo(s2.getSecond()));
+		Collections.sort(scores, (s1, s2) -> s2.getSecond().compareTo(s1.getSecond()));
 		hackathon.get().setFirstTeamId(scores.size() >= 1 ? String.valueOf(scores.get(0).getFirst()) : null);
 		hackathon.get().setSecondTeamId(scores.size() >= 2 ? String.valueOf(scores.get(1).getFirst()) : null);
 		hackathon.get().setThirdTeamId(scores.size() >= 3 ? String.valueOf(scores.get(2).getFirst()) : null);
