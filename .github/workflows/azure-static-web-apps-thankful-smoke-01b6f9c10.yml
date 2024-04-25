@@ -110,34 +110,29 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - testDeployment
-       # Environment variables available to all jobs and steps in this workflow
-env:
-  APP_LOCATION: "/" # location of your client code
-  API_LOCATION: "/" # location of your api source code - optional
-  APP_ARTIFACT_LOCATION: "build" # location of client code build output
-  AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_SMOKE_01B6F9C10 }}
+  
 
 jobs:
-  # build_and_deploy_job:
-  #   if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
-  #   runs-on: ubuntu-latest
-  #   name: Build and Deploy Job
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: true
-  #         lfs: false
-  #     - name: Build And Deploy
-  #       id: builddeploy
-  #       uses: Azure/static-web-apps-deploy@v1
-  #       with:
-  #         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_SMOKE_01B6F9C10 }}
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #         action: "upload"
-  #         app_build_command: 'npm insatll --force'
-  #         api_build_command: 'npm install --force'
-  #         app_location: "/build" # Assuming your React app is built into the build directory
-  #         output_location: "public" # Adjust this if your build output directory is different
+  build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_SMOKE_01B6F9C10 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_build_command: 'npm insatll --force'
+          api_build_command: 'npm install --force'
+          app_location: "/build" # Assuming your React app is built into the build directory
+          output_location: "build" #Adjust this if your build output directory is different
  
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -148,5 +143,5 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_SMOKE_01B6F9C10 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_SMOKE_01B6F9C10 }}
           action: "close"
