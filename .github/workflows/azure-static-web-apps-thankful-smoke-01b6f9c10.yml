@@ -37,7 +37,7 @@
 #           api_build_command: 'npm install --force'
 #           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
 #           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-#           app_location: "/src"# App source code path
+#           app_location: "/github/workspace/build"# App source code path
 #           skip_app_build: true
 #           api_location: "" # Api source code path - optional
 #           skip_api_build: true
