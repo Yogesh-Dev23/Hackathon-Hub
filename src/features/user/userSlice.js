@@ -28,7 +28,7 @@ export const userRegistration = createAsyncThunk(
     async (formData, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/register",
+                "https://hackerhub2.azurewebsites.net/User/register",
                 formData
             );
             return response.data;
@@ -44,7 +44,7 @@ export const otpVerification = createAsyncThunk(
     async (otpDetails, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/verifyOtp",
+                "https://hackerhub2.azurewebsites.net/User/verifyOtp",
                 otpDetails
             );
             let jwt = "";
@@ -70,7 +70,7 @@ export const userLogin = createAsyncThunk(
     async (formData, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/login",
+                "https://hackerhub2.azurewebsites.net/User/login",
                 formData
             );
             let jwt = "";
@@ -97,7 +97,7 @@ export const ssoLogin = createAsyncThunk(
     async (idtoken, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/ssoLogin",
+                "https://hackerhub2.azurewebsites.net/User/ssoLogin",
                 { idtoken }
             );
             let jwt = "";
@@ -124,7 +124,7 @@ export const ssoRegister = createAsyncThunk(
     async (idtoken, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/ssoRegister",
+                "https://hackerhub2.azurewebsites.net/User/ssoRegister",
                 { idtoken }
             );
             let jwt = "";
@@ -153,7 +153,7 @@ export const reattemptLogin = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.get(
-                `http://localhost:8080/User/${userId}`,
+                `https://hackerhub2.azurewebsites.net/User/${userId}`,
                 { headers }
                 // otpDetails
             );
@@ -169,7 +169,7 @@ export const forgotPassword = createAsyncThunk(
     async (Email, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/forgotPassword",
+                "https://hackerhub2.azurewebsites.net/User/forgotPassword",
                 Email
             );
             return response.data;
@@ -183,7 +183,7 @@ export const changePassword = createAsyncThunk(
     async (formData, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/User/changePassword",
+                "https://hackerhub2.azurewebsites.net/User/changePassword",
                 formData
             );
             return response.data;

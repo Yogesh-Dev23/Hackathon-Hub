@@ -17,7 +17,7 @@ export const fetchHackathons = createAsyncThunk(
     "hackathon/fetchHackathons",
     async (thunkAPI) => {
         try {
-            const response = await axios.get("http://localhost:8080/Hackathon");
+            const response = await axios.get("https://hackerhub2.azurewebsites.net/Hackathon");
             if (!response.data) {
                 return [];
             }
@@ -36,7 +36,7 @@ export const fetchHackathonsAdmin = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.get(
-                "http://localhost:8080/Admin/hackathon",
+                "https://hackerhub2.azurewebsites.net/Admin/hackathon",
                 { headers }
             );
             if (!response.data) {
@@ -58,13 +58,13 @@ export const hackathonCreation = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.post(
-                "http://localhost:8080/Admin/hackathon",
+                "https://hackerhub2.azurewebsites.net/Admin/hackathon",
                 formData,
                 { headers }
             );
             // console.log(response);
             // const response2 = await axios.get(
-            //     "http://localhost:8080/Hackathon"
+            //     "https://hackerhub2.azurewebsites.net/Hackathon"
             // );
 
             return response.data;
@@ -82,13 +82,13 @@ export const hackathonEnd = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.put(
-                `http://localhost:8080/Admin/hackathon/end/${hackathonId}`,
+                `https://hackerhub2.azurewebsites.net/Admin/hackathon/end/${hackathonId}`,
                 {},
                 { headers }
             );
             // console.log(response);
             // const response2 = await axios.get(
-            //     "http://localhost:8080/Hackathon"
+            //     "https://hackerhub2.azurewebsites.net/Hackathon"
             // );
             return response.data;
         } catch (error) {
@@ -102,7 +102,7 @@ export const newRequest = createAsyncThunk(
     async (formData, thunkAPI) => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/ContactDetails/Contact",
+                "https://hackerhub2.azurewebsites.net/ContactDetails/Contact",
                 formData
             );
             return response.data;
@@ -119,7 +119,7 @@ export const fetchRequests = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.get(
-                "http://localhost:8080/Admin/contactDetails",
+                "https://hackerhub2.azurewebsites.net/Admin/contactDetails",
                 { headers }
             );
             if (!response.data) {

@@ -21,7 +21,7 @@ export const fetchEvaluators = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.get(
-                "http://localhost:8080/Admin/Evaluator",
+                "https://hackerhub2.azurewebsites.net/Admin/Evaluator",
                 { headers }
             );
             // console.log(response);
@@ -40,12 +40,12 @@ export const registerEvaluator = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.post(
-                "http://localhost:8080/Admin/Evaluator",
+                "https://hackerhub2.azurewebsites.net/Admin/Evaluator",
                 evaluatorData,
                 { headers }
             );
             // const response2 = await axios.get(
-            //     "http://localhost:8080/Admin/Evaluator"
+            //     "https://hackerhub2.azurewebsites.net/Admin/Evaluator"
             // );
             return response.data;
         } catch (error) {
@@ -62,12 +62,12 @@ export const assignEvaluator = createAsyncThunk(
                 Authorization: `Bearer ${token}`,
             };
             const response = await axios.post(
-                "http://localhost:8080/Admin/assign",
+                "https://hackerhub2.azurewebsites.net/Admin/assign",
                 evaluatorData,
                 { headers }
             );
             // const response2 = await axios.get(
-            //     "http://localhost:8080/Admin/Evaluator"
+            //     "https://hackerhub2.azurewebsites.net/Admin/Evaluator"
             // );
             if (!response.data) {
                 return [];
